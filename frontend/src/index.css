@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --primary-color: #0f172a;
+}
+
+/* Tvojih 6 tema */
+[data-theme='emerald'] { --primary-color: #10b981; }
+[data-theme='ruby'] { --primary-color: #af586b; }
+[data-theme='gold'] { --primary-color: #ffb259; }
+[data-theme='ocean'] { --primary-color: #0ea5e9; }
+[data-theme='violet'] { --primary-color: #8b5cf6; }
+[data-theme='midnight'] { --primary-color: #1e293b; }
+
+/* Mapiranje varijable kako bi je Tailwind prepoznao */
+@theme {
+  --color-tmizan: var(--primary-color);
+}
+
+/* Helper klase ako zatrebaju */
+.bg-tmizan { background-color: var(--primary-color); }
+.text-tmizan { color: var(--primary-color); }

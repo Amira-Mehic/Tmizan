@@ -1,7 +1,53 @@
+// ============================================================================
+// Uređivač blog objave. Sadržaj se piše dvojezično, jer se blog prikazuje na
+// jeziku koji je posjetilac odabrao. Objava se može sačuvati kao skica ili
+// objaviti, a označava se i kad je tekst preuzet sa strane, da se navede izvor.
+// ============================================================================
+
 import { useState, useEffect, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useTheme } from "../../context/ThemeContext"
-import { savePost, getStoredPosts, CATEGORIES } from "../../constants/blog/MOCK_POSTS"
+import { useAuth } from "../../context/AuthContext"
+import { useLang } from "../../context/LanguageContext"
+import { CATEGORIES } from "../../constants/blog/MOCK_POSTS"
+import { savePost, getPostById } from "../../services/blogService"
+
+const STR = {
+  bs: {
+    h2: "Naslov (H2)", h3: "Podnaslovi (H3)", bold: "Bold", italic: "Italic",
+    list: "Lista", listBtn: "• Lista", separator: "Separator", markdown: "Markdown",
+    panelLabel: "Blogger panel", editTitle: "Uredi objavu", newTitle: "Nova objava",
+    autosavedAt: (t) => `Auto-spremljeno u ${t}`,
+    back: "← Natrag", edit: "Uredi", preview: "Pregled",
+    saving: "...", saved: "✓ Sačuvano", saveDraft: "Spremi draft",
+    update: "Ažuriraj", publish: "Objavi",
+    defaultPostTitle: "Naslov objave",
+    slugLabel: (slug) => `Slug: /blog/${slug}`,
+    category: "Kategorija", thumbnail: "Thumbnail (URL slike)",
+    video: "Video (YouTube embed URL)", videoHint: "Koristi /embed/ link (ne standardni YouTube link)",
+    author: "Autor", authorPh: "Ime autora...",
+    publishDate: "Datum objave", readTime: "Procijenjeno čitanje (minuti)",
+    options: "Opcije", featured: "Istaknuta objava (featured)", publishedVisible: "Objavljen (vidljiv na blogu)",
+    slug: "URL slug", slugPh: "url-clanka",
+  },
+  en: {
+    h2: "Heading (H2)", h3: "Subheading (H3)", bold: "Bold", italic: "Italic",
+    list: "List", listBtn: "• List", separator: "Separator", markdown: "Markdown",
+    panelLabel: "Blogger panel", editTitle: "Edit post", newTitle: "New post",
+    autosavedAt: (t) => `Auto-saved at ${t}`,
+    back: "← Back", edit: "Edit", preview: "Preview",
+    saving: "...", saved: "✓ Saved", saveDraft: "Save draft",
+    update: "Update", publish: "Publish",
+    defaultPostTitle: "Post title",
+    slugLabel: (slug) => `Slug: /blog/${slug}`,
+    category: "Category", thumbnail: "Thumbnail (image URL)",
+    video: "Video (YouTube embed URL)", videoHint: "Use the /embed/ link (not a standard YouTube link)",
+    author: "Author", authorPh: "Author name...",
+    publishDate: "Publish date", readTime: "Estimated read time (minutes)",
+    options: "Options", featured: "Featured post", publishedVisible: "Published (visible on blog)",
+    slug: "URL slug", slugPh: "article-url",
+  },
+}
 
 // Umeće tekst na cursor poziciju u textarea
 function insertAtCursor(textarea, before, after = "", newline = false) {
@@ -24,7 +70,9 @@ function insertAtCursor(textarea, before, after = "", newline = false) {
   return next
 }
 
-function FormatToolbar({ textareaRef, value, onChange, isLight, tMuted, cardSubBg }) {
+function FormatToolbar({ textareaRef, onChange, isLight, tMuted, cardSubBg }) {
+  const { lang } = useLang()
+  const s = STR[lang] || STR.bs
   const btn = `px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
     isLight ? "hover:bg-black/10 text-black/50 hover:text-black/80" : "hover:bg-white/10 text-white/40 hover:text-white/80"
   }`
@@ -37,17 +85,17 @@ function FormatToolbar({ textareaRef, value, onChange, isLight, tMuted, cardSubB
 
   return (
     <div className={`flex items-center gap-0.5 px-2 py-1.5 rounded-t-xl border-b ${isLight ? `${cardSubBg} border-black/10` : "bg-white/4 border-white/8"}`}>
-      <button type="button" onClick={() => apply("## ", "", true)} className={btn} title="Naslov (H2)">H2</button>
-      <button type="button" onClick={() => apply("### ", "", true)} className={btn} title="Podnaslovi (H3)">H3</button>
+      <button type="button" onClick={() => apply("## ", "", true)} className={btn} title={s.h2}>H2</button>
+      <button type="button" onClick={() => apply("### ", "", true)} className={btn} title={s.h3}>H3</button>
       <div className={divider} />
-      <button type="button" onClick={() => apply("**", "**")} className={`${btn} font-black`} title="Bold">B</button>
-      <button type="button" onClick={() => apply("*", "*")} className={`${btn} italic`} title="Italic">I</button>
+      <button type="button" onClick={() => apply("**", "**")} className={`${btn} font-black`} title={s.bold}>B</button>
+      <button type="button" onClick={() => apply("*", "*")} className={`${btn} italic`} title={s.italic}>I</button>
       <div className={divider} />
-      <button type="button" onClick={() => apply("- ", "", true)} className={btn} title="Lista">• Lista</button>
+      <button type="button" onClick={() => apply("- ", "", true)} className={btn} title={s.list}>{s.listBtn}</button>
       <div className={divider} />
-      <button type="button" onClick={() => apply("---", "", true)} className={btn} title="Separator">—</button>
+      <button type="button" onClick={() => apply("---", "", true)} className={btn} title={s.separator}>—</button>
       <div className="flex-1" />
-      <span className={`text-[9px] ${tMuted} opacity-50`}>Markdown</span>
+      <span className={`text-[9px] ${tMuted} opacity-50`}>{s.markdown}</span>
     </div>
   )
 }
@@ -90,7 +138,10 @@ const EMPTY_POST = {
 export default function BloggerPostEditor() {
   const { theme }    = useTheme()
   const navigate     = useNavigate()
+  const { user }     = useAuth()
   const { id }       = useParams()   // undefined za novu objavu
+  const { lang }     = useLang()
+  const s = STR[lang] || STR.bs
   const isLight      = theme?.id === "beige_white" || theme?.id === "pink_soft"
   const isEdit       = Boolean(id)
 
@@ -99,16 +150,29 @@ export default function BloggerPostEditor() {
   const [saving, setSaving]   = useState(false)
   const [saved, setSaved]     = useState(false)
   const [preview, setPreview] = useState(false)
+  const [loaded, setLoaded]   = useState(!isEdit) // za novu objavu odmah spremno, za edit tek kad se učita iz baze
+  const [autoSavedAt, setAutoSavedAt] = useState(null)
   const textareaRef           = useRef(null)
 
-  // Ako je edit mode, učitaj post iz localStorage
+  // Prati najnoviji form i da li ima nespremljenih izmjena - koristi ga autosave/unload logika
+  // ispod (bez da svaki keystroke ponovo pravi nove event listenere)
+  const formRef        = useRef(form)
+  const hasUnsavedRef  = useRef(false)
+  const autosaveTimer  = useRef(null)
+  useEffect(() => { formRef.current = form }, [form])
+
+  // Ako je edit mode, učitaj post iz baze
   useEffect(() => {
     if (isEdit) {
-      const stored = getStoredPosts()
-      const found  = stored.find(p => p.id === id)
-      if (found) setForm(found)
-      else navigate("/blogger/objave")
+      getPostById(id).then(found => {
+        if (found) setForm(found)
+        else navigate("/blogger/objave")
+        setLoaded(true)
+      })
     }
+    // Namjerno samo [id] - isEdit je izveden iz id-a, a navigate je stabilna
+    // referenca; ponovno uključivanje bi izazvalo nepotrebno ponovno učitavanje.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   const set = (key, val) => {
@@ -123,18 +187,61 @@ export default function BloggerPostEditor() {
     setSaved(false)
   }
 
-  function handleSave(publish = null) {
+  async function handleSave(publish = null) {
     setSaving(true)
     const toSave = {
       ...form,
       published: publish !== null ? publish : form.published,
     }
-    savePost(toSave)
-    setTimeout(() => {
-      setSaving(false)
+    const { data, error } = await savePost(toSave, user?.id)
+    setSaving(false)
+    if (!error && data) {
+      setForm(prev => ({ ...prev, id: data.id })) // upamti pravi DB id (bitno da drugi save ne pravi duplikat)
       setSaved(true)
-    }, 400)
+      hasUnsavedRef.current = false
+    }
   }
+
+  // Tiho spremanje kao draft (ne dira published status) - koristi se za auto-save,
+  // ne pokazuje "..." na glavnim dugmadima da ne smeta korisniku dok kuca
+  const autosave = useRef(async () => {
+    const current = formRef.current
+    if (!current.title?.trim() && !current.content?.trim()) return // nema šta spremiti
+    const { data, error } = await savePost(current, user?.id)
+    if (!error && data) {
+      setForm(prev => ({ ...prev, id: data.id }))
+      hasUnsavedRef.current = false
+      setAutoSavedAt(new Date())
+    }
+  }).current
+
+  // Auto-spremi 3s nakon što korisnik prestane kucati (samo ako ima naslov ili sadržaj)
+  useEffect(() => {
+    if (!loaded) return
+    hasUnsavedRef.current = true
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    autosaveTimer.current = setTimeout(() => { autosave() }, 3000)
+    return () => clearTimeout(autosaveTimer.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, form.title, form.titleEn, form.excerpt, form.excerptEn, form.content, form.contentEn, form.category, form.thumbnail, form.video, form.author, form.readTime, form.featured])
+
+  // Spremi draft ako korisnik nenamjerno napusti stranicu - kad tab postane skriven
+  // (prebacivanje aplikacije, zatvaranje) i kad se komponenta ukloni (odlazak na drugu
+  // rutu unutar aplikacije). beforeunload je "best effort" jer browser može prekinuti
+  // mrežni poziv prije nego stigne do baze, ali visibilitychange stigne ranije i pouzdanije.
+  useEffect(() => {
+    function onHide() {
+      if (document.visibilityState === "hidden" && hasUnsavedRef.current) autosave()
+    }
+    document.addEventListener("visibilitychange", onHide)
+    window.addEventListener("beforeunload", onHide)
+    return () => {
+      document.removeEventListener("visibilitychange", onHide)
+      window.removeEventListener("beforeunload", onHide)
+      if (hasUnsavedRef.current) autosave() // napustio stranicu unutar app-a (React Router unmount)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const tText    = theme?.text    || "text-white"
   const tMuted   = theme?.muted   || "text-white/50"
@@ -156,37 +263,42 @@ export default function BloggerPostEditor() {
       {/* Header */}
       <div className="flex flex-wrap items-center gap-4 justify-between mb-8">
         <div>
-          <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${tSubtle}`}>Blogger panel</p>
+          <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${tSubtle}`}>{s.panelLabel}</p>
           <h1 className={`text-2xl font-black ${tText}`}>
-            {isEdit ? "Uredi objavu" : "Nova objava"}
+            {isEdit ? s.editTitle : s.newTitle}
           </h1>
         </div>
         <div className="flex items-center gap-2">
+          {autoSavedAt && !saving && (
+            <span className={`text-[10px] font-semibold ${tSubtle} hidden sm:inline`}>
+              {s.autosavedAt(autoSavedAt.toLocaleTimeString(lang === "en" ? "en-US" : "bs-BA", { hour: "2-digit", minute: "2-digit" }))}
+            </span>
+          )}
           <button
             onClick={() => navigate("/blogger/objave")}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${isLight ? "bg-black/8 text-black/60 hover:bg-black/14" : "bg-white/8 text-white/60 hover:bg-white/14"}`}
           >
-            ← Natrag
+            {s.back}
           </button>
           <button
             onClick={() => setPreview(v => !v)}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${preview ? (theme?.button || "") : (isLight ? "bg-black/8 text-black/60 hover:bg-black/14" : "bg-white/8 text-white/60 hover:bg-white/14")}`}
           >
-            {preview ? "Uredi" : "Pregled"}
+            {preview ? s.edit : s.preview}
           </button>
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${isLight ? "bg-black/8 text-black/60 hover:bg-black/14" : "bg-white/8 text-white/60 hover:bg-white/14"}`}
           >
-            {saving ? "..." : saved ? "✓ Sačuvano" : "Spremi draft"}
+            {saving ? s.saving : saved ? s.saved : s.saveDraft}
           </button>
           <button
             onClick={() => handleSave(true)}
             disabled={saving || !form.title}
             className={`px-5 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 ${theme?.button}`}
           >
-            {form.published ? "Ažuriraj" : "Objavi"}
+            {form.published ? s.update : s.publish}
           </button>
         </div>
       </div>
@@ -202,11 +314,13 @@ export default function BloggerPostEditor() {
           <div className="mb-2">
             {CATEGORIES.find(c => c.id === form.category) && (
               <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${theme?.button}`}>
-                {CATEGORIES.find(c => c.id === form.category)?.label}
+                {lang === "en"
+                  ? (CATEGORIES.find(c => c.id === form.category)?.labelEn || CATEGORIES.find(c => c.id === form.category)?.label)
+                  : CATEGORIES.find(c => c.id === form.category)?.label}
               </span>
             )}
           </div>
-          <h1 className={`text-3xl font-black mt-4 mb-3 ${tText}`}>{form.title || "Naslov objave"}</h1>
+          <h1 className={`text-3xl font-black mt-4 mb-3 ${tText}`}>{form.title || s.defaultPostTitle}</h1>
           <p className={`text-sm leading-relaxed mb-6 ${tMuted}`}>{form.excerpt}</p>
           <div className={`text-sm leading-relaxed whitespace-pre-wrap ${tMuted}`}>{form.content}</div>
         </div>
@@ -244,7 +358,7 @@ export default function BloggerPostEditor() {
                 className={inputCls}
               />
               {activeTab === "bs" && form.slug && (
-                <p className={`text-[10px] mt-1.5 ${tSubtle}`}>Slug: /blog/{form.slug}</p>
+                <p className={`text-[10px] mt-1.5 ${tSubtle}`}>{s.slugLabel(form.slug)}</p>
               )}
             </div>
 
@@ -296,7 +410,7 @@ export default function BloggerPostEditor() {
 
             {/* Kategorija */}
             <div className={`rounded-xl border p-4 ${tCard}`}>
-              <label className={labelCls}>Kategorija</label>
+              <label className={labelCls}>{s.category}</label>
               <div className="flex flex-col gap-1.5">
                 {CATEGORIES.filter(c => c.id !== "sve").map(cat => (
                   <label key={cat.id} className="flex items-center gap-2 cursor-pointer group">
@@ -309,7 +423,7 @@ export default function BloggerPostEditor() {
                       className="accent-[#1D9E75]"
                     />
                     <span className={`text-xs font-semibold group-hover:opacity-70 transition ${form.category === cat.id ? tText : tMuted}`}>
-                      {cat.label}
+                      {lang === "en" ? (cat.labelEn || cat.label) : cat.label}
                     </span>
                   </label>
                 ))}
@@ -318,7 +432,7 @@ export default function BloggerPostEditor() {
 
             {/* Thumbnail */}
             <div className={`rounded-xl border p-4 ${tCard}`}>
-              <label className={labelCls}>Thumbnail (URL slike)</label>
+              <label className={labelCls}>{s.thumbnail}</label>
               <input
                 type="url"
                 value={form.thumbnail}
@@ -335,7 +449,7 @@ export default function BloggerPostEditor() {
 
             {/* Video */}
             <div className={`rounded-xl border p-4 ${tCard}`}>
-              <label className={labelCls}>Video (YouTube embed URL)</label>
+              <label className={labelCls}>{s.video}</label>
               <input
                 type="url"
                 value={form.video}
@@ -344,24 +458,24 @@ export default function BloggerPostEditor() {
                 className={inputCls}
               />
               <p className={`text-[10px] mt-1.5 ${tSubtle} opacity-70`}>
-                Koristi /embed/ link (ne standardni YouTube link)
+                {s.videoHint}
               </p>
             </div>
 
             {/* Autor + Datum + Čitanje */}
             <div className={`rounded-xl border p-4 flex flex-col gap-4 ${tCard}`}>
               <div>
-                <label className={labelCls}>Autor</label>
+                <label className={labelCls}>{s.author}</label>
                 <input
                   type="text"
                   value={form.author}
                   onChange={e => set("author", e.target.value)}
-                  placeholder="Ime autora..."
+                  placeholder={s.authorPh}
                   className={inputCls}
                 />
               </div>
               <div>
-                <label className={labelCls}>Datum objave</label>
+                <label className={labelCls}>{s.publishDate}</label>
                 <input
                   type="date"
                   value={form.date}
@@ -370,7 +484,7 @@ export default function BloggerPostEditor() {
                 />
               </div>
               <div>
-                <label className={labelCls}>Procijenjeno čitanje (minuti)</label>
+                <label className={labelCls}>{s.readTime}</label>
                 <input
                   type="number"
                   min="1"
@@ -384,7 +498,7 @@ export default function BloggerPostEditor() {
 
             {/* Opcije */}
             <div className={`rounded-xl border p-4 flex flex-col gap-3 ${tCard}`}>
-              <label className={`${labelCls} mb-0`}>Opcije</label>
+              <label className={`${labelCls} mb-0`}>{s.options}</label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -392,7 +506,7 @@ export default function BloggerPostEditor() {
                   onChange={e => set("featured", e.target.checked)}
                   className="accent-[#1D9E75] w-4 h-4"
                 />
-                <span className={`text-xs font-semibold ${tText}`}>Istaknuta objava (featured)</span>
+                <span className={`text-xs font-semibold ${tText}`}>{s.featured}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -401,18 +515,18 @@ export default function BloggerPostEditor() {
                   onChange={e => set("published", e.target.checked)}
                   className="accent-[#1D9E75] w-4 h-4"
                 />
-                <span className={`text-xs font-semibold ${tText}`}>Objavljen (vidljiv na blogu)</span>
+                <span className={`text-xs font-semibold ${tText}`}>{s.publishedVisible}</span>
               </label>
             </div>
 
             {/* Slug (ručna kontrola) */}
             <div className={`rounded-xl border p-4 ${tCard}`}>
-              <label className={labelCls}>URL slug</label>
+              <label className={labelCls}>{s.slug}</label>
               <input
                 type="text"
                 value={form.slug}
                 onChange={e => set("slug", e.target.value)}
-                placeholder="url-clanka"
+                placeholder={s.slugPh}
                 className={inputCls}
               />
               <p className={`text-[10px] mt-1.5 ${tSubtle} opacity-70`}>/blog/{form.slug || "..."}</p>

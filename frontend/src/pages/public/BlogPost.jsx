@@ -1,13 +1,26 @@
+// ============================================================================
+// Prikaz jedne blog objave, otvara se preko sluga iz adrese. Kad je tekst
+// preuzet sa strane, navodi se izvorni autor.
+// ============================================================================
+
 import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useTheme } from "../../context/ThemeContext"
-import { getPostBySlug, getAllPosts, CATEGORIES } from "../../constants/blog/MOCK_POSTS"
+import { useAuth } from "../../context/AuthContext"
+import { CATEGORIES } from "../../constants/blog/MOCK_POSTS"
+import { getPostBySlug, getAllPosts } from "../../services/blogService"
+import PublicHeader from "../../components/layout/PublicHeader"
+import SideAds from "../../components/ui/SideAds"
+import ParticleBackground from "../../components/shared/ParticleBackground"
+import { useLang } from "../../context/LanguageContext"
 
+const BS_MJESECI = ["januar", "februar", "mart", "april", "maj", "juni", "juli", "avgust", "septembar", "oktobar", "novembar", "decembar"]
 function fmtDate(iso, lang = "bs") {
   if (!iso) return ""
   const d = new Date(iso)
+  if (isNaN(d)) return ""
   if (lang === "en") return d.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })
-  return d.toLocaleDateString("bs-BA", { day: "numeric", month: "long", year: "numeric" })
+  return `${d.getDate()}. ${BS_MJESECI[d.getMonth()]} ${d.getFullYear()}.`
 }
 
 // Auto-konverzija YouTube URL-a u embed format
@@ -77,7 +90,6 @@ function renderContent(text, tText, tMuted, isLight) {
 // Sidebar widget: Zadnje objavljeno
 function SidebarRecentPosts({ posts, currentId, theme, isLight, navigate }) {
   const tText   = theme?.text   || "text-white"
-  const tMuted  = theme?.muted  || "text-white/50"
   const tCard   = theme?.card   || "bg-white/5 border border-white/10"
   const tBorder = isLight ? "border-black/8" : "border-white/[0.06]"
   const accentBg = theme?.button?.includes("bg-[") ? theme.button.split(" ")[0] : "bg-[#1D9E75]"
@@ -164,18 +176,27 @@ export default function BlogPost() {
   const { slug }    = useParams()
   const navigate    = useNavigate()
   const { theme }   = useTheme()
+  const { user }    = useAuth()
   const isLight     = theme?.id === "beige_white" || theme?.id === "pink_soft"
-  const lang        = localStorage.getItem("tmizan_lang") || "bs"
+  // Da li je pozadina stranice zapravo TAMNA (pink tema ima tamni gradijent, ali je "light" za kartice)
+  const bgHex       = (theme?.bgGradient || "").match(/#[0-9a-fA-F]{6}/)?.[0] || "#000000"
+  const pageDark    = (0.299 * parseInt(bgHex.slice(1, 3), 16) + 0.587 * parseInt(bgHex.slice(3, 5), 16) + 0.114 * parseInt(bgHex.slice(5, 7), 16)) < 140
+  const { lang }    = useLang()  // isti jezik kao ostatak aplikacije
 
-  const [post, setPost]       = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [post, setPost]         = useState(null)
+  const [loading, setLoading]   = useState(true)
+  const [allPosts, setAllPosts] = useState([])
 
-  const allPosts = getAllPosts()
+  useEffect(() => { getAllPosts().then(setAllPosts) }, [])
 
   useEffect(() => {
-    setPost(getPostBySlug(slug) || null)
-    setLoading(false)
-    window.scrollTo(0, 0)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true)
+    getPostBySlug(slug).then(p => {
+      setPost(p || null)
+      setLoading(false)
+      window.scrollTo(0, 0)
+    })
   }, [slug])
 
   const tText   = theme?.text   || "text-white"
@@ -187,13 +208,15 @@ export default function BlogPost() {
   const cat = post ? CATEGORIES.find(c => c.id === post.category) : null
 
   if (loading) return (
-    <div className={`min-h-screen ${theme?.bgGradient || "bg-gray-950"} flex items-center justify-center`}>
+    <div className={`relative z-0 min-h-screen ${user ? "" : (theme?.bgGradient || "bg-gray-950")} flex items-center justify-center`}>
+      {!user && <ParticleBackground colors={theme?.particleColors} />}
       <div className="w-6 h-6 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin" />
     </div>
   )
 
   if (!post) return (
-    <div className={`min-h-screen ${theme?.bgGradient || "bg-gray-950"} flex flex-col items-center justify-center gap-4`}>
+    <div className={`relative z-0 min-h-screen ${user ? "" : (theme?.bgGradient || "bg-gray-950")} flex flex-col items-center justify-center gap-4`}>
+      {!user && <ParticleBackground colors={theme?.particleColors} />}
       <span className="text-4xl opacity-30">📄</span>
       <p className={`text-sm ${tMuted}`}>{lang === "en" ? "Article not found." : "Članak nije pronađen."}</p>
       <button onClick={() => navigate("/blog")} className={`text-xs font-bold px-5 py-2.5 rounded-full ${theme?.button}`}>
@@ -207,18 +230,24 @@ export default function BlogPost() {
   const embedUrl = toEmbedUrl(post.video)
 
   return (
-    <div className={`min-h-screen ${theme?.bgGradient || "bg-gray-950"} transition-all duration-500`}>
+    <div className={`relative z-0 min-h-screen transition-all duration-500 ${user ? "" : (theme?.bgGradient || "bg-gray-950")}`}>
+      {!user && <ParticleBackground colors={theme?.particleColors} />}
 
-      {/* ── NAV ── */}
-      <nav className={`sticky top-0 z-30 backdrop-blur-md border-b ${isLight ? "border-black/8 bg-white/40" : "border-white/[0.06] bg-black/20"}`}>
-        <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
-          <button onClick={() => navigate("/blog")} className={`flex items-center gap-2 text-sm font-semibold ${tMuted} hover:opacity-70 transition`}>
-            <span>←</span>
-            <span>{lang === "en" ? "All articles" : "Svi članci"}</span>
-          </button>
-          <Link to="/" className={`text-sm font-black ${tText}`}>Tmizan</Link>
-        </div>
-      </nav>
+      {/* ── NAV: gost dobija puni javni header; svi zadrže "Svi članci" red ── */}
+      {!user && <PublicHeader />}
+      {!user && <SideAds theme={theme} />}
+      {/* Sekundarna traka (Svi članci / Tmizan) samo za prijavljene - gost ima puni header */}
+      {user && (
+        <nav className={`sticky top-0 z-30 backdrop-blur-md border-b ${pageDark ? "bg-black/25 border-white/10" : "bg-white/50 border-black/10"}`}>
+          <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+            <button onClick={() => navigate("/blog")} className={`flex items-center gap-2 text-sm font-semibold ${pageDark ? "text-white/80" : tMuted} hover:opacity-70 transition`}>
+              <span>←</span>
+              <span>{lang === "en" ? "All articles" : "Svi članci"}</span>
+            </button>
+            <Link to="/" className={`text-sm font-black ${pageDark ? "text-white" : tText}`}>Tmizan</Link>
+          </div>
+        </nav>
+      )}
 
       <div className="max-w-6xl mx-auto px-5 py-10">
         {/* ── 2-KOLONA LAYOUT: Članak + Sidebar ── */}

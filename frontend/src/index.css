@@ -1,22 +1,41 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --primary-color: #0f172a;
+  color-scheme: dark;
 }
 
-/* Tvojih 6 tema */
-[data-theme='emerald'] { --primary-color: #10b981; }
-[data-theme='ruby'] { --primary-color: #af586b; }
-[data-theme='gold'] { --primary-color: #ffb259; }
-[data-theme='ocean'] { --primary-color: #0ea5e9; }
-[data-theme='violet'] { --primary-color: #8b5cf6; }
-[data-theme='midnight'] { --primary-color: #1e293b; }
-
-/* Mapiranje varijable kako bi je Tailwind prepoznao */
-@theme {
-  --color-tmizan: var(--primary-color);
+/* Date inputi — override browser dark-only stilizacije */
+input[type="date"].light-input {
+  color-scheme: light;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+input[type="date"].dark-input {
+  color-scheme: dark;
 }
 
-/* Helper klase ako zatrebaju */
-.bg-tmizan { background-color: var(--primary-color); }
-.text-tmizan { color: var(--primary-color); }
+body {
+  margin: 0;
+  background-color: #010409 !important; /* Tamna baza zida */
+  color: white;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Naslovi na dashboard-tipu stranica — izdvojeni font za profesionalniji ton,
+   odvojen od tijela teksta (koje ostaje na sistemskom fontu). */
+.font-heading {
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Osigurava da stranice ne blokiraju pozadinu */
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+.baner-slot-wrapper {
+  background-color: #071511; /* Prilagodi boju prema tvom dizajnu */
+  border-left: 0.5px solid rgba(255, 255, 255, 0.06);
+  border-right: 0.5px solid rgba(255, 255, 255, 0.06);
+}

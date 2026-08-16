@@ -1,12 +1,18 @@
+// ============================================================================
+// Jedan ajet u listi, s arapskim tekstom, statusom i sažetkom napretka. Detalji
+// se otvaraju na klik da lista ostane pregledna i kad sura ima stotine ajeta.
+// ============================================================================
+
 import { useState } from "react";
 import { useLang } from "../../../../context/LanguageContext";
 import { STATUS } from "../../../../constants/hifz/STATUS";
-import { toArabicNumerals } from "../../../../constants/hifz/helpers";
+import { toArabicNumerals, tefsirBaSuraUrl } from "../../../../constants/hifz/helpers";
 import { StatusPicker } from "../../../../components/hifz/shared/StatusPicker";
 import { ArabicText } from "../../../../components/hifz/shared/ArabicText";
 import { TranslationPanel } from "../../../../components/hifz/shared/TranslationPanel";
+import HelpTip from "../../../../components/shared/HelpTip";
 
-export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, theme, s }) {
+export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, onViewDetails, theme, s }) {
   const { lang } = useLang()
   const [expanded, setExpanded] = useState(false);
 
@@ -35,10 +41,10 @@ export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, theme, s
   // Accent bg klasa za TranslationPanel tabove
   const accentBg = (theme?.button || "").split(" ").find(c => c.startsWith("bg-[")) || "bg-[#1D9E75]"
 
-  // Tefsir link — tanzil.net (BS Korkut) ili quran.com (EN)
+  // Tefsir link - tefsir.ba Ibn Kesir (BS, na nivou sure) ili quran.com (EN)
   const [surahId, ayahId] = (verse.verse_key || "").split(":")
   const tefsirUrl = lang === "bs"
-    ? `https://tanzil.net/#trans/bs.korkut/${verse.verse_key || ""}`
+    ? tefsirBaSuraUrl(verse.verse_key)
     : `https://quran.com/${surahId}/${ayahId}`
 
   return (
@@ -103,6 +109,17 @@ export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, theme, s
           {verseData?.repeatCount > 0 && (
             <span className="text-[10px] text-[#378ADD]">↻{verseData.repeatCount}</span>
           )}
+          {onViewDetails && (
+            <button
+              onClick={e => { e.stopPropagation(); onViewDetails(verse.verse_key); }}
+              className={`text-[10px] font-bold px-2 py-1 rounded-lg border transition-all flex-shrink-0 ${
+                isLight ? "border-black/10 text-black/40 hover:bg-black/8" : "border-white/10 text-white/40 hover:bg-white/8"
+              }`}
+              title={sv.viewDetails || "Vidi detalje"}
+            >
+              {sv.viewDetails || "Vidi detalje"}
+            </button>
+          )}
           <span
             className={`text-sm transition-transform duration-200 ${expanded ? "rotate-90" : "group-hover:translate-x-0.5"} ${arrowTxt}`}
           >›</span>
@@ -112,7 +129,7 @@ export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, theme, s
       {/* ── EXPANDED PANEL ──────────────────────────────────────────────────── */}
       <div
         style={{
-          maxHeight: expanded ? "900px" : "0px",
+          maxHeight: expanded ? "6000px" : "0px",
           overflow: "hidden",
           transition: "max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
@@ -141,18 +158,18 @@ export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, theme, s
           {personalTefsir && (
             <div className={`rounded-xl px-3.5 py-3 border-l-2 border-[#EF9F27]/50 ${isLight ? "bg-[#EF9F27]/[0.05]" : "bg-[#EF9F27]/[0.07]"}`}>
               <p className={`text-[10px] font-bold uppercase tracking-widest mb-1.5 text-[#C07A00]`}>
-                {sv.myTefsir || "Moj tefsir"}
+                {sv.myTefsir || "Lični osvrt"}
               </p>
               <p className={`text-xs leading-relaxed line-clamp-3 ${tMuted}`}>{personalTefsir}</p>
             </div>
           )}
 
           {/* Slični ajeti */}
-          {similarAyahs.length > 0 && (
-            <div>
-              <p className={`text-[10px] font-semibold uppercase tracking-widest mb-2 ${tSubtle}`}>
-                {sv.similarVerses || "Slični ajeti"}
-              </p>
+          <div>
+            <p className={`text-[10px] font-semibold uppercase tracking-widest mb-2 ${tSubtle}`}>
+              {sv.similarVerses || "Slični ajeti"}
+            </p>
+            {similarAyahs.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
                 {similarAyahs.map(sa => (
                   <span
@@ -163,13 +180,16 @@ export function VerseRowItem({ verse, verseData, onOpen, onQuickStatus, theme, s
                   </span>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className={`text-xs ${tSubtle}`}>{sv.noSimilar || "Nema sličnih ajeta."}</p>
+            )}
+          </div>
 
           {/* Quick status */}
           <div>
-            <p className={`text-[10px] font-semibold uppercase tracking-widest mb-2 ${tSubtle}`}>
+            <p className={`text-[10px] font-semibold uppercase tracking-widest mb-2 ${tSubtle} flex items-center`}>
               {sv.statusLabel || "Status ajeta"}
+              <HelpTip text="Klikni jedno od dugmadi da odmah označiš status baš OVOG ajeta — sprema se automatski, nema posebnog 'Sačuvaj'." />
             </p>
             <StatusPicker
               layout="pills"

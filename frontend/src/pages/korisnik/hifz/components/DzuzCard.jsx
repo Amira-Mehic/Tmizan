@@ -1,3 +1,9 @@
+// ============================================================================
+// Kartica jednog džuza u Hifz Trackeru. Prikazuje sve stranice tog džuza kao
+// mrežu obojenu po statusu, pa se napredak vidi na prvi pogled. Klik na karticu
+// otvara detalje džuza, a klik na pojedinačnu stranicu vodi direktno na nju.
+// ============================================================================
+
 import { useState } from "react";
 import { STATUS, cycleStatus } from "../../../../constants/hifz/STATUS";
 import { getJuzPages, toArabicNumerals } from "../../../../constants/hifz/helpers";
@@ -9,7 +15,9 @@ export function DzuzCard({ juzNo, pageStatuses, onPageClick, onCardClick, theme,
   const inProgress = pages.filter(p => pageStatuses[p]?.status && pageStatuses[p]?.status !== "prazna").length;
   const colsClass  = (juzNo === 1 || juzNo === 30) ? "grid-cols-6" : "grid-cols-5";
 
-  const isLight = theme?.id === "beige_white" || theme?.id === "pink_soft";
+  // Cotton Candy (pink_soft) ima tamnu karticu (bg-[#2A0A1C]) iako mu je akcent
+  // svijetao, pa se ovdje tretira kao tamna tema (inače su brojevi nečitljivi).
+  const isLight = theme?.id === "beige_white";
   const inactiveBar   = isLight ? "bg-black/20"  : "bg-white/10";
   const inactiveNum   = isLight ? "text-black/55" : "text-white/25";
   const dividerBorder = isLight ? "border-black/15" : "border-white/5";
@@ -20,6 +28,7 @@ export function DzuzCard({ juzNo, pageStatuses, onPageClick, onCardClick, theme,
   return (
     <div className={`rounded-2xl p-3 sm:p-4 flex flex-col justify-between select-none min-h-[190px] group relative ${theme?.card || "bg-white/[0.04] border border-white/10"}`}>
       <button onClick={e => { e.stopPropagation(); setUnlocked(u => !u); }}
+        title={unlocked ? (s?.juz?.unlockHint || "Zaključaj nazad") : (s?.juz?.lockHint || "Otključaj da bi mogao/la označavati stranice — zaštita od slučajnog klika")}
         className={`absolute top-2.5 right-2.5 z-10 w-6 h-6 rounded-lg border text-[11px] flex items-center justify-center transition-all
           ${unlocked ? "bg-[#1D9E75]/20 border-[#1D9E75]/40 text-[#49C79A]" : lockBtn}`}>
         {unlocked ? "🔓" : "🔒"}

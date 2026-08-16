@@ -1,8 +1,14 @@
+// ============================================================================
+// Mrežni prikaz svih 604 stranice mushafa, obojenih po statusu učenja. Uz
+// filtriranje po broju stranice i mogućnost da se prikažu samo one koje su
+// započete, čime se duga lista svede na ono što je korisniku trenutno bitno.
+// ============================================================================
+
 import { STATUS } from "../../../../constants/hifz/STATUS";
 import { usePageVerseCounts } from "../../../../hooks/hifz/usePageVerseCounts";
-import { getSurahsForPage, toArabicNumerals, getJuzForPage } from "../../../../constants/hifz/helpers";
+import { getSurahsForPage, toArabicNumerals, getJuzForPage, statusCardBg, statusPillBg, statusBorder } from "../../../../constants/hifz/helpers";
 
-export function PageGridView({ pageStatuses, onOpenPage, pageFilter, theme, s }) {
+export function PageGridView({ pageStatuses, onOpenPage, pageFilter, onlyStarted, noResultsLabel, theme, s }) {
   const isLight     = theme?.id === "beige_white" || theme?.id === "pink_soft";
   const verseCounts = usePageVerseCounts();
 
@@ -15,9 +21,16 @@ export function PageGridView({ pageStatuses, onOpenPage, pageFilter, theme, s })
   const sl = s?.statusLabel || {};
 
   const allPages = Array.from({ length: 604 }, (_, i) => i + 1);
-  const pages = pageFilter
+  let pages = pageFilter
     ? allPages.filter(p => String(p).includes(String(pageFilter)))
     : allPages;
+  if (onlyStarted) {
+    pages = pages.filter(p => (pageStatuses[p]?.status || "prazna") !== "prazna");
+  }
+
+  if (pages.length === 0) {
+    return <p className={`text-sm py-8 text-center ${tMuted}`}>{noResultsLabel || "—"}</p>;
+  }
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -37,15 +50,22 @@ export function PageGridView({ pageStatuses, onOpenPage, pageFilter, theme, s })
             key={p}
             onClick={() => onOpenPage(p)}
             className={`group relative flex flex-col rounded-2xl border text-left transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] overflow-hidden
-              ${isActive ? `${st.bg} ${st.border}` : `${tCardAlt} ${tBorder}`}`}
-            style={{ minHeight: "170px" }}
+              ${isActive ? "" : `${tCardAlt} ${tBorder}`}`}
+            style={{
+              minHeight: "170px",
+              ...(isActive ? {
+                backgroundColor: statusCardBg(st.hex, isLight),
+                borderColor: statusBorder(st.hex, isLight),
+                borderLeft: `4px solid ${st.hex}`,
+              } : {}),
+            }}
           >
             {/* Gornji dio: broj stranice + arapski broj */}
             <div className="flex items-start justify-between px-4 pt-4 pb-2">
-              <span className={`text-3xl font-black leading-none ${isActive ? st.text : tText}`}>{p}</span>
+              <span className={`text-3xl font-black leading-none ${tText}`} style={isActive ? { color: st.hex } : undefined}>{p}</span>
               <span
-                className={`text-2xl font-bold leading-none opacity-25 ${isActive ? st.text : tMuted}`}
-                style={{ fontFamily: "'Amiri', serif" }}
+                className={`text-2xl font-bold leading-none opacity-25 ${tMuted}`}
+                style={{ fontFamily: "'Amiri', serif", ...(isActive ? { color: st.hex } : {}) }}
               >
                 {toArabicNumerals(p)}
               </span>
@@ -54,7 +74,7 @@ export function PageGridView({ pageStatuses, onOpenPage, pageFilter, theme, s })
             {/* Sura naziv */}
             <div className="px-4 flex-1">
               {surahNames ? (
-                <span className={`text-[11px] font-bold leading-snug ${isActive ? st.text : tText}`}>
+                <span className={`text-[11px] font-bold leading-snug ${tText}`} style={isActive ? { color: st.hex } : undefined}>
                   {surahNames}
                 </span>
               ) : (
@@ -76,13 +96,14 @@ export function PageGridView({ pageStatuses, onOpenPage, pageFilter, theme, s })
 
             {/* Status pill + difficulty */}
             <div className="mx-3 mb-3 flex items-center gap-1.5">
-              <div className={`flex-1 flex items-center gap-2 rounded-lg px-2.5 py-1.5
-                ${isActive ? "bg-black/10" : (isLight ? "bg-black/[0.04]" : "bg-white/[0.04]")}`}>
+              <div className="flex-1 flex items-center gap-2 rounded-lg px-2.5 py-1.5"
+                style={{ backgroundColor: isActive ? statusPillBg(st.hex, isLight) : (isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.04)") }}>
                 <div
                   className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: st.hex, opacity: isActive ? 0.9 : 0.4 }}
                 />
-                <span className={`text-[10px] font-semibold leading-none ${isActive ? st.text : tSubtle}`}>
+                <span className={`text-[10px] font-semibold leading-none ${isActive ? "" : tSubtle}`}
+                  style={isActive ? { color: st.hex } : undefined}>
                   {statusLabel}
                 </span>
               </div>

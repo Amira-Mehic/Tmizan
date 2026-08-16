@@ -1,15 +1,32 @@
+// ============================================================================
+// Forma za uređivanje podataka o jednoj stranici ili ajetu: status, sigurnost
+// znanja, težina, broj ponavljanja, greške i bilješke. Izmjene se čuvaju same, s
+// kratkom odgodom nakon zadnjeg unosa, pa nema zasebnog dugmeta za spremanje i
+// ne može se izgubiti unos zatvaranjem prozora.
+// ============================================================================
+
 import { useState, useEffect } from "react";
 import { STATUS } from "../../../../constants/hifz/STATUS";
-import { todayStr, fmtDate } from "../../../../constants/hifz/helpers";
+import { todayStr, fmtDateTime } from "../../../../constants/hifz/helpers";
 import { Counter } from "../../../../components/hifz/shared/Counter";
 import { StatusPicker } from "../../../../components/hifz/shared/StatusPicker";
 import { ConfidencePicker } from "../../../../components/hifz/shared/ConfidencePicker";
 import { RepeatHistoryInput } from "../../../../components/hifz/shared/RepeatHistoryInput";
+import { AyahBrowser } from "../../../../components/hifz/shared/AyahBrowser";
+import { usePageVerses } from "../../../../hooks/hifz/usePageVerses";
+import { recordError, clearError, fetchFlaggedRefs } from "../../../../features/murajaah/greskeService";
+import HelpTip from "../../../../components/shared/HelpTip";
 
-export function EditForm({ pageNum, pageData, onSave, theme, s }) {
-  const [open,          setOpen]          = useState(false);
+export function EditForm({ pageNum, pageData, onSave, theme, s, alwaysOpen = false, autoSave = false, footer = null, userId = null, verseStatuses = null, onSaveVerse = null }) {
+  const [open,          setOpen]          = useState(alwaysOpen);
   const [isDirty,       setIsDirty]       = useState(false);
   const [confirmClose,  setConfirmClose]  = useState(false);
+  const [justSaved,     setJustSaved]     = useState(false);
+  // ── Koji SU ajeti ove stranice imali grešku - samo ako je userId dat
+  // (Učenje danas ga prosljeđuje; ako parent ne prosljeđuje userId, picker se
+  // jednostavno ne prikazuje, ništa se ne mijenja u ponašanju za taj poziv). ──
+  const { verses: pageVerses } = usePageVerses(userId ? pageNum : null);
+  const [flaggedAyahs, setFlaggedAyahs] = useState([]);
 
   const d       = pageData || {};
   const isLight = theme?.id === "beige_white" || theme?.id === "pink_soft";
@@ -23,7 +40,7 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
   const tInput    = isLight
     ? "border-black/15 bg-black/5 text-[#3D3A35] placeholder:text-[#B0A898] focus:border-[#1D9E75]/60"
     : "border-white/10 bg-white/5 text-white placeholder:text-white/15 focus:border-[#1D9E75]/60";
-  const tIndicator = isLight ? "bg-black/20" : "bg-white/20";
+  const tAccent   = theme?.accent  || "text-[#49C79A]";
 
   const sf = s?.form || {};
 
@@ -40,7 +57,12 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
   const [notes,         setNotes]         = useState(d.notes         || "");
   const [history,       setHistory]       = useState(d.history       || []);
 
-  useEffect(() => {
+  // Čisto sinhrono popunjavanje forme kad se promijeni pageNum - prilagođava
+  // se tokom rendera uz poređenje s prethodnim pageNum (isti okidač kao stari
+  // dependency niz).
+  const [prevPageNum, setPrevPageNum] = useState(pageNum);
+  if (pageNum !== prevPageNum) {
+    setPrevPageNum(pageNum);
     const d2 = pageData || {};
     setStatus(d2.status        || "prazna");
     setStartDate(d2.startDate  || "");
@@ -55,7 +77,34 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
     setNotes(d2.notes           || "");
     setHistory(d2.history       || []);
     setIsDirty(false);
-  }, [pageNum]);
+  }
+
+  // Učitaj koji su ajeti OVE stranice već označeni kao greška (error_tracking).
+  useEffect(() => {
+    let cancelled = false;
+    if (!userId || !pageVerses?.length) {
+      Promise.resolve().then(() => { if (!cancelled) setFlaggedAyahs([]); });
+      return () => { cancelled = true; };
+    }
+    fetchFlaggedRefs(userId, pageVerses.map(v => v.verse_key), "verse").then((refs) => {
+      if (!cancelled) setFlaggedAyahs(refs);
+    });
+    return () => { cancelled = true; };
+  }, [userId, pageVerses]);
+
+  // Toggle: klik na ajet-chip odmah (bez čekanja na Sačuvaj) upisuje/briše
+  // grešku za TAJ ajet u error_tracking - nezavisno od glavnog "Greške" brojača
+  // stranice, koji ostaje ukupan broj. Ovo automatski hrani i Dashboard sekciju
+  // "Stranice i ajeti s greškama" i mapu slabih mjesta (isti podaci).
+  const toggleErrorAyah = async (verseKey) => {
+    if (!userId) return;
+    const isFlagged = flaggedAyahs.includes(verseKey);
+    setFlaggedAyahs(prev => isFlagged ? prev.filter(v => v !== verseKey) : [...prev, verseKey]);
+    try {
+      if (isFlagged) await clearError(userId, { ref: verseKey, refType: "verse" });
+      else await recordError(userId, { ref: verseKey, refType: "verse", errors: 1, date: todayStr() });
+    } catch { /* ostaje lokalno, sync kasnije */ }
+  };
 
   // Čistači koji označavaju dirty stanje
   const mark = fn => (...args) => { fn(...args); setIsDirty(true); };
@@ -78,10 +127,25 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
   };
 
   const handleToggle = () => {
+    if (alwaysOpen) return;
     if (open && isDirty) { setConfirmClose(true); return; }
     setOpen(o => !o);
     setConfirmClose(false);
   };
+
+  // ── Auto-save (bez ručnog "Sačuvaj") - 700ms nakon zadnje izmjene, snimi
+  // tiho u pozadini i kratko se prikaže potvrda umjesto statusa "nespremljeno". ──
+  useEffect(() => {
+    if (!autoSave || !isDirty) return;
+    const t = setTimeout(() => {
+      onSave(pageNum, { status, startDate, lastRepeat, repeatCount, newLessonReps, postLearnReps, confidence, difficulty, errors, shortNote, notes, history });
+      setIsDirty(false);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1600);
+    }, 700);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSave, isDirty, status, startDate, lastRepeat, repeatCount, newLessonReps, postLearnReps, confidence, difficulty, errors, shortNote, notes, history]);
 
   const handleDiscard = () => {
     // Resetuj na originalne podatke
@@ -106,23 +170,34 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
   return (
     <div className={`rounded-2xl overflow-hidden transition-all ${open ? `border ${tCard}` : ""}`}>
 
-      {/* Accordion toggle */}
-      <button onClick={handleToggle}
-        className="flex items-center gap-2 px-1 py-2.5 hover:opacity-70 transition-all">
-        <span className={`text-base transition-transform duration-200 flex-shrink-0 ${open ? "rotate-90" : ""} ${tSubtle}`}>›</span>
-        <span className={`text-sm font-semibold ${open ? "text-[#49C79A]" : tMuted}`}>
-          {sf.title || "Uredi podatke stranice"}
-        </span>
-        {isDirty && (
-          <span className="text-[10px] text-[#EF9F27] font-bold flex-shrink-0">● {sf.unsaved || "nespremljeno"}</span>
-        )}
-        {!isDirty && d.status && d.status !== "prazna" && (
-          <span className={`text-[10px] opacity-40 ${tMuted} flex-shrink-0`}>· {s?.statusLabel?.[d.status]?.f || ""}</span>
-        )}
-      </button>
+      {/* Naslov - accordion toggle samo ako NIJE alwaysOpen; inače običan naslov bez strelice/klika */}
+      {alwaysOpen ? (
+        <div className="flex items-center gap-2 px-1 py-2.5">
+          <span className={`text-sm font-semibold ${tAccent}`}>
+            {sf.title || "Uredi podatke stranice"}
+          </span>
+          {autoSave && justSaved && (
+            <span className={`text-[10px] font-bold flex-shrink-0 ${tAccent}`}>✓ {sf.savedAuto || "Sačuvano"}</span>
+          )}
+        </div>
+      ) : (
+        <button onClick={handleToggle}
+          className="flex items-center gap-2 px-1 py-2.5 hover:opacity-70 transition-all">
+          <span className={`text-base transition-transform duration-200 flex-shrink-0 ${open ? "rotate-90" : ""} ${tSubtle}`}>›</span>
+          <span className={`text-sm font-semibold ${open ? tAccent : tMuted}`}>
+            {sf.title || "Uredi podatke stranice"}
+          </span>
+          {isDirty && (
+            <span className="text-[10px] text-[#EF9F27] font-bold flex-shrink-0">● {sf.unsaved || "nespremljeno"}</span>
+          )}
+          {!isDirty && d.status && d.status !== "prazna" && (
+            <span className={`text-[10px] opacity-40 ${tMuted} flex-shrink-0`}>· {s?.statusLabel?.[d.status]?.f || ""}</span>
+          )}
+        </button>
+      )}
 
-      {/* Confirm close bez čuvanja */}
-      {confirmClose && (
+      {/* Confirm close bez čuvanja - nepotrebno kad je autoSave uključen */}
+      {!autoSave && confirmClose && (
         <div className={`mx-1 mb-2 px-4 py-3 rounded-xl border border-[#EF9F27]/40 bg-[#EF9F27]/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}>
           <p className="text-xs font-semibold text-[#F5B453]">
             {sf.unsavedWarning || "Imaš nespremljene promjene. Šta želiš uraditi?"}
@@ -140,8 +215,8 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
         </div>
       )}
 
-      {open && (
-        <div className={`border-t ${tBorder} px-4 sm:px-5 pb-5 pt-5 flex flex-col gap-5`}>
+      {(open || alwaysOpen) && (
+        <div className={`${alwaysOpen ? "" : `border-t ${tBorder}`} px-4 sm:px-5 pb-5 pt-5 flex flex-col gap-5`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
             {/* LIJEVO */}
@@ -173,8 +248,9 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
                 </div>
               </div>
               <div>
-                <label className={`text-[10px] font-semibold uppercase tracking-wider block mb-2 ${tSubtle}`}>
+                <label className={`text-[10px] font-semibold uppercase tracking-wider mb-2 flex items-center ${tSubtle}`}>
                   {sf.repsSection || "Ponavljanja"}
+                  <HelpTip text="'Nove lekcije' = koliko puta si ponovio/la stranicu DOK si je tek učio/la napamet. 'Nakon učenja' = koliko puta si je ponovio/la KASNIJE, kroz murajaa. 'Ukupan broj' je zbir oba." />
                 </label>
                 <div className="flex flex-col gap-2">
                   {[
@@ -267,12 +343,12 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
                     isLight={isLight} s={s}
                   />
                 </div>
-                {history.length > 0 && (
+                {history.length > 0 ? (
                   <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
                     {history.map(h => (
                       <div key={h.id} className={`flex items-center gap-2 px-2 py-1.5 rounded-lg border group ${tCardSub}`}>
                         <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${h.errors > 0 ? "bg-[#F58C8C]" : "bg-[#378ADD]"}`} />
-                        <span className={`text-xs font-semibold flex-shrink-0 ${tText}`}>{fmtDate(h.date)}</span>
+                        <span className={`text-xs font-semibold flex-shrink-0 ${tText}`}>{fmtDateTime(h.date)}</span>
                         {h.note && <span className={`text-xs flex-1 truncate ${tMuted}`}>{h.note}</span>}
                         {!h.note && <span className="flex-1" />}
                         {h.errors > 0 && <span className="text-[10px] text-[#F58C8C] flex-shrink-0">⚠{h.errors}</span>}
@@ -281,21 +357,52 @@ export function EditForm({ pageNum, pageData, onSave, theme, s }) {
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className={`text-xs ${tMuted}`}>{sf.noHistory || "Nema historije ponavljanja."}</p>
                 )}
               </div>
             </div>
           </div>
 
-          <div className={`flex justify-end gap-3 pt-2 border-t ${tBorder}`}>
-            <button onClick={handleToggle}
-              className={`px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all ${tBorder} ${tMuted} hover:opacity-70`}>
-              {sf.cancel || "Odustani"}
-            </button>
-            <button onClick={handleSave}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${theme?.button || "bg-[#1D9E75] text-white hover:bg-[#1A8E68]"}`}>
-              {sf.save || "Sačuvaj"}
-            </button>
-          </div>
+          {/* ── Ajeti ove stranice - traka za odabir + prošireni prikaz/uređivanje
+              izabranog ajeta (uključuje i označavanje greške na tom ajetu). ── */}
+          {userId && onSaveVerse && pageVerses?.length > 0 && (
+            <div className={`pt-4 border-t ${tBorder}`}>
+              <label className={`text-[10px] font-semibold uppercase tracking-wider block mb-3 ${tSubtle}`}>
+                {sf.errorAyahsLabel || "Ajeti ove stranice"}
+              </label>
+              <AyahBrowser
+                verses={pageVerses}
+                verseStatuses={verseStatuses || {}}
+                onSaveVerse={onSaveVerse}
+                userId={userId}
+                flaggedAyahs={flaggedAyahs}
+                onToggleError={toggleErrorAyah}
+                autoSave={autoSave}
+                theme={theme} s={s} isLight={isLight}
+              />
+            </div>
+          )}
+
+          {autoSave ? (
+            <div className={`pt-2 border-t ${tBorder} flex flex-col items-center gap-3`}>
+              <p className={`text-[11px] text-center ${tSubtle}`}>
+                {sf.autoSaveNote || "Podaci se automatski čuvaju kad ih unesete."}
+              </p>
+              {footer}
+            </div>
+          ) : (
+            <div className={`flex justify-end gap-3 pt-2 border-t ${tBorder}`}>
+              <button onClick={handleToggle}
+                className={`px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all ${tBorder} ${tMuted} hover:opacity-70`}>
+                {sf.cancel || "Odustani"}
+              </button>
+              <button onClick={handleSave}
+                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${theme?.button || "bg-[#1D9E75] text-white hover:bg-[#1A8E68]"}`}>
+                {sf.save || "Sačuvaj"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

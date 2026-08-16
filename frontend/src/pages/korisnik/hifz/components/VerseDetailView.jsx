@@ -1,7 +1,14 @@
+// ============================================================================
+// Detaljan prikaz jednog ajeta: arapski tekst, prijevod, status, sigurnost
+// znanja, greške po riječima, lični tefsir, bilješke, historija ponavljanja i
+// popis sličnih ajeta. Slični ajeti se bilježe ručno, jer su zamjene između njih
+// najčešći uzrok greške pri učenju napamet.
+// ============================================================================
+
 import { useState } from "react";
 import { useLang } from "../../../../context/LanguageContext";
 import { STATUS } from "../../../../constants/hifz/STATUS";
-import { todayStr, fmtDate, toArabicNumerals } from "../../../../constants/hifz/helpers";
+import { todayStr, fmtDate, fmtDateTime, toArabicNumerals, statusCardBg, statusBorder, statusPillBg, tefsirBaSuraUrl } from "../../../../constants/hifz/helpers";
 import { SURA_DATA } from "../../../../constants/hifz/SURA_DATA";
 import { ArabicText } from "../../../../components/hifz/shared/ArabicText";
 import { TranslationPanel } from "../../../../components/hifz/shared/TranslationPanel";
@@ -10,6 +17,8 @@ import { ConfidencePicker } from "../../../../components/hifz/shared/ConfidenceP
 import { Counter } from "../../../../components/hifz/shared/Counter";
 import { StatusPicker } from "../../../../components/hifz/shared/StatusPicker";
 import { RepeatHistoryInput } from "../../../../components/hifz/shared/RepeatHistoryInput";
+import { FirstTimeHint } from "../../../../components/shared/FirstTimeHint";
+import HelpTip from "../../../../components/shared/HelpTip";
 
 export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) {
   const d = verseData || {};
@@ -53,8 +62,9 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
   const accentBg = (theme?.button || "").split(" ").find(c => c.startsWith("bg-[")) || "bg-[#1D9E75]"
   const _vk = (verse.verse_key || "").replace(":", "/")
   const tefsirUrl = lang === "bs"
-    ? `https://tanzil.net/#trans/bs.korkut/${verse.verse_key || ""}`
+    ? tefsirBaSuraUrl(verse.verse_key)
     : `https://quran.com/${_vk}`
+  const tefsirHost = lang === "bs" ? "tefsir.ba" : "quran.com"
 
   const mark = fn => (...args) => { fn(...args); setIsDirty(true); };
 
@@ -85,6 +95,7 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
     if (!trimmed) return;
     setSimilarAyahs(prev => [...prev, { id: Date.now(), key: trimmed }]);
     setNewSimilar("");
+    setIsDirty(true);
   };
 
   const surahId = parseInt(verse.verse_key?.split(":")[0]);
@@ -94,7 +105,6 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
   const tabs = [
     { id: "pregled", label: sv.tabView    || "Pregled"       },
     { id: "uredi",   label: sv.tabEdit    || "Uredi"         },
-    { id: "slicni",  label: sv.tabSimilar || "Slični ajeti"  },
   ];
 
   return (
@@ -126,7 +136,14 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
       )}
 
       {/* ── META HEADER CARD ────────────────────────────────────────────────── */}
-      <div className={`rounded-2xl border p-4 sm:p-5 mb-1 ${tCard}`}>
+      {/* Boja kartice prati status ajeta - isti solid-color pattern kao na hero
+          karticama stranice/sure/džuza, i vraća se na neutralno za "prazna". */}
+      <div className={`rounded-2xl border p-4 sm:p-5 mb-1 ${status !== "prazna" ? "" : tCard}`}
+        style={status !== "prazna" ? {
+          backgroundColor: statusCardBg(st.hex, isLight),
+          borderColor: statusBorder(st.hex, isLight),
+          borderLeft: `4px solid ${st.hex}`,
+        } : undefined}>
         <div className={`flex items-center justify-between flex-wrap gap-3 pb-4 border-b ${tBorder}`}>
           <div className="flex items-center gap-5 flex-wrap">
             <div>
@@ -155,9 +172,13 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
               </div>
             </div>
           </div>
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${st.border} ${st.bg}`}>
-            <div className={`w-2 h-2 rounded-full ${st.dot}`} />
-            <span className={`text-xs font-bold ${st.text}`}>{statusLabelM}</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border"
+            style={{
+              backgroundColor: statusPillBg(st.hex, isLight),
+              borderColor: statusBorder(st.hex, isLight),
+            }}>
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: st.hex }} />
+            <span className="text-xs font-bold" style={{ color: st.hex }}>{statusLabelM}</span>
           </div>
         </div>
 
@@ -185,7 +206,7 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
               className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest w-fit hover:opacity-70 transition-all ${tSubtle}`}
             >
               <span>📖</span>
-              <span>{sv.tefsirLink || "Otvori tefsir na quran.com"} ↗</span>
+              <span>{sv.tefsirLink || "Otvori tefsir"} ({tefsirHost}) ↗</span>
             </a>
           </div>
         )}
@@ -233,6 +254,9 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
             {t.label}
           </button>
         ))}
+        <HelpTip text={lang === "en"
+          ? "'Overview' is read-only — a quick summary of what's saved. 'Edit' is where you change status, difficulty, notes and history."
+          : "'Pregled' je samo za uvid — brz pregled onoga što je sačuvano. 'Uredi' je gdje mijenjaš status, težinu, bilješke i historiju."} />
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
@@ -240,6 +264,14 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
       ══════════════════════════════════════════════════════════════════════ */}
       {tab === "pregled" && (
         <div className="flex flex-col gap-5">
+
+          <FirstTimeHint
+            storageKey="tmizan_hint_versedetail_pregled_seen"
+            theme={theme}
+            text={lang === "en"
+              ? "This 'Overview' tab is read-only — a quick summary of what's already saved. To change the status, notes, difficulty or repeat history, switch to the 'Edit' tab above."
+              : "Ovaj tab 'Pregled' je samo za brz uvid — prikazuje ono što je već sačuvano. Da promijeniš status, bilješke, težinu ili historiju ponavljanja, prebaci se na tab 'Uredi' iznad."}
+          />
 
           {/* ── STAT CHIPS ─────────────────────────────────────────────────── */}
           {(startDate || lastRepeat || repeatCount > 0 || errors > 0 || confidence > 0) && (
@@ -285,7 +317,7 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
           {personalTefsir && (
             <div className={`rounded-xl px-4 py-3.5 border-l-2 border-[#EF9F27]/50 ${isLight ? "bg-[#EF9F27]/[0.05]" : "bg-[#EF9F27]/[0.07]"}`}>
               <p className="text-[10px] font-bold uppercase tracking-widest mb-2 text-[#C07A00]">
-                {sv.myTefsir || "Moj tefsir / osvrt"}
+                {sv.myTefsir || "Lični osvrt"}
               </p>
               <p className={`text-sm leading-relaxed whitespace-pre-wrap ${tMuted}`}>{personalTefsir}</p>
             </div>
@@ -334,7 +366,7 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
                       />
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <p className={`text-sm font-semibold leading-none ${tText}`}>{fmtDate(h.date)}</p>
+                          <p className={`text-sm font-semibold leading-none ${tText}`}>{fmtDateTime(h.date)}</p>
                           {h.note && <p className={`text-xs mt-1.5 leading-snug ${tMuted}`}>{h.note}</p>}
                         </div>
                         {h.errors > 0 && (
@@ -349,11 +381,11 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
           </div>
 
           {/* ── SLIČNI AJETI ───────────────────────────────────────────────── */}
-          {similarAyahs.length > 0 && (
-            <div>
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-3 ${tSubtle}`}>
-                {sv.similarVerses || "Slični ajeti"}
-              </p>
+          <div>
+            <p className={`text-xs font-semibold uppercase tracking-widest mb-3 ${tSubtle}`}>
+              {sv.similarVerses || "Slični ajeti"}
+            </p>
+            {similarAyahs.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {similarAyahs.map(sa => (
                   <span key={sa.id}
@@ -362,8 +394,10 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
                   </span>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className={`text-sm ${tSubtle}`}>{sv.noSimilar || "Nema sličnih ajeta."}</p>
+            )}
+          </div>
         </div>
       )}
 
@@ -380,8 +414,11 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
 
               {/* Status */}
               <div>
-                <p className={`text-[10px] font-semibold uppercase tracking-widest mb-3 ${tSubtle}`}>
+                <p className={`text-[10px] font-semibold uppercase tracking-widest mb-3 ${tSubtle} flex items-center`}>
                   {sv.statusLabel || "Status ajeta"}
+                  <HelpTip text={lang === "en"
+                    ? "Sets the status for this exact ayah — remember to tap 'Save changes' at the bottom when you're done."
+                    : "Postavlja status baš za ovaj ajet — ne zaboravi kliknuti 'Sačuvaj promjene' na dnu kad završiš."} />
                 </p>
                 <StatusPicker value={status} onChange={(key) => {
                   setStatus(key); setIsDirty(true);
@@ -452,8 +489,11 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
 
               {/* Bilješka */}
               <div>
-                <p className={`text-[10px] font-semibold uppercase tracking-widest mb-3 ${tSubtle}`}>
+                <p className={`text-[10px] font-semibold uppercase tracking-widest mb-3 ${tSubtle} flex items-center`}>
                   {sv.notes || "Bilješka"}
+                  <HelpTip text={lang === "en"
+                    ? "Short note = a quick tag visible in the pages/ayahs list. Detailed note = longer, only visible when you open this ayah."
+                    : "Kratka napomena = brza oznaka vidljiva u listi stranica/ajeta. Detaljna bilješka = duža, vidljiva samo kad otvoriš baš ovaj ajet."} />
                 </p>
                 <div className="flex flex-col gap-3">
                   <div>
@@ -475,7 +515,7 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
               <div className={`pt-4 border-t ${tBorder}`}>
                 <div className="flex items-start justify-between gap-2 mb-1.5">
                   <label className={`text-xs font-semibold ${tMuted}`}>
-                    {sv.myTefsir || "Moj tefsir / osobni osvrt"}
+                    {sv.myTefsir || "Lični osvrt"}
                   </label>
                   <a
                     href={tefsirUrl}
@@ -483,17 +523,17 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
                     rel="noopener noreferrer"
                     className={`text-[10px] font-bold flex items-center gap-1 hover:opacity-70 transition-all flex-shrink-0 ${isLight ? "text-black/30" : "text-white/30"}`}
                   >
-                    📖 quran.com ↗
+                    📖 {tefsirHost} ↗
                   </a>
                 </div>
                 <p className={`text-[10px] mb-2 ${tMuted} opacity-60`}>
-                  {sv.myTefsirDesc || "Napiši kratki sažetak tefsira ili vlastiti osvrt na ovaj ajet."}
+                  {sv.myTefsirDesc || "Kako planiraš raditi na ovom ajetu, šta trebaš popraviti ili na šta paziti."}
                 </p>
                 <textarea
                   value={personalTefsir}
                   onChange={e => { setPersonalTefsir(e.target.value); setIsDirty(true); }}
                   rows={5}
-                  placeholder={sv.myTefsirPh || "Napiši sažetak ili vlastite misli o ovom ajetu..."}
+                  placeholder={sv.myTefsirPh || "Npr. plan ponavljanja, na čemu trebam poraditi..."}
                   className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition-all resize-none ${tInput}`}
                 />
               </div>
@@ -512,12 +552,12 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
                   setErrors={mark(setErrors)}
                   isLight={isLight} s={s}
                 />
-                {history.length > 0 && (
+                {history.length > 0 ? (
                   <div className="mt-3 flex flex-col">
                     {history.map(h => (
                       <div key={h.id} className={`flex items-center gap-2.5 py-2 border-t group ${tBorder}`}>
                         <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${h.errors > 0 ? "bg-[#F58C8C]" : "bg-[#378ADD]"}`} />
-                        <span className={`text-xs font-semibold flex-shrink-0 ${tText}`}>{fmtDate(h.date)}</span>
+                        <span className={`text-xs font-semibold flex-shrink-0 ${tText}`}>{fmtDateTime(h.date)}</span>
                         {h.note && <span className={`text-xs flex-1 truncate ${tMuted}`}>{h.note}</span>}
                         {!h.note && <span className="flex-1" />}
                         {h.errors > 0 && <span className="text-[10px] text-[#F58C8C] flex-shrink-0">⚠{h.errors}</span>}
@@ -526,9 +566,46 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className={`mt-3 text-xs ${tMuted}`}>{sv.noHistory || "Nema historije ponavljanja."}</p>
                 )}
               </div>
             </div>
+          </div>
+
+          {/* ── Slični ajeti (uklopljeno unutar Uredi, ne poseban tab) ────────── */}
+          <div className={`pt-4 border-t ${tBorder}`}>
+            <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1 ${tSubtle}`}>
+              {sv.addSimilar || "Dodaj slični ajet"}
+            </p>
+            <p className={`text-xs mb-3 ${tMuted}`}>
+              {sv.similarDesc || "Upiši ključ ajeta koji je sličan ovom (npr. 2:255, 3:18...)"}
+            </p>
+            <div className="flex gap-2 mb-3">
+              <input type="text" value={newSimilar} onChange={e => setNewSimilar(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && addSimilar()}
+                placeholder={sv.similarPh || "npr. 2:255"}
+                className={`flex-1 min-w-0 rounded-xl border px-3 py-2.5 text-sm outline-none transition-all font-mono ${tInput}`} />
+              <button onClick={addSimilar}
+                className="px-4 py-2 rounded-xl bg-[#378ADD]/15 border border-[#378ADD]/30 text-[#378ADD] text-sm font-bold hover:bg-[#378ADD]/25 transition-all whitespace-nowrap flex-shrink-0">
+                {sv.addSimilarBtn || "+ Dodaj"}
+              </button>
+            </div>
+
+            {similarAyahs.length === 0 ? (
+              <p className={`text-sm ${tSubtle}`}>{sv.noSimilar || "Nema dodanih sličnih ajeta."}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {similarAyahs.map(sa => (
+                  <span key={sa.id}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#378ADD]/30 bg-[#378ADD]/8 text-xs font-semibold text-[#378ADD]">
+                    {sa.key}
+                    <button onClick={() => { setSimilarAyahs(prev => prev.filter(x => x.id !== sa.id)); setIsDirty(true); }}
+                      className="opacity-60 hover:opacity-100">✕</button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Sačuvaj + Odustani */}
@@ -544,61 +621,6 @@ export function VerseDetailView({ verse, verseData, onSave, onBack, theme, s }) 
                   : `${theme?.button || "bg-[#1D9E75] text-white hover:bg-[#1A8E68]"} border-transparent`}`}>
               {saved ? (sv.saved || "✓ Sačuvano") : (sv.save || "Sačuvaj promjene")}
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════════
-          TAB: SLIČNI AJETI
-      ══════════════════════════════════════════════════════════════════════ */}
-      {tab === "slicni" && (
-        <div className="flex flex-col gap-6">
-
-          <section>
-            <p className={`text-[10px] font-semibold uppercase tracking-widest mb-1 ${tSubtle}`}>
-              {sv.addSimilar || "Dodaj slični ajet"}
-            </p>
-            <p className={`text-xs mb-4 ${tMuted}`}>
-              {sv.similarDesc || "Upiši ključ ajeta koji je sličan ovom (npr. 2:255, 3:18...)"}
-            </p>
-            <div className="flex gap-2">
-              <input type="text" value={newSimilar} onChange={e => setNewSimilar(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && addSimilar()}
-                placeholder={sv.similarPh || "npr. 2:255"}
-                className={`flex-1 rounded-xl border px-3 py-2.5 text-sm outline-none transition-all font-mono ${tInput}`} />
-              <button onClick={addSimilar}
-                className="px-4 py-2 rounded-xl bg-[#378ADD]/15 border border-[#378ADD]/30 text-[#378ADD] text-sm font-bold hover:bg-[#378ADD]/25 transition-all whitespace-nowrap">
-                {sv.addSimilarBtn || "+ Dodaj"}
-              </button>
-            </div>
-          </section>
-
-          {similarAyahs.length === 0 ? (
-            <p className={`text-sm py-4 ${tSubtle}`}>{sv.noSimilar || "Nema dodanih sličnih ajeta."}</p>
-          ) : (
-            <section className={`pt-6 border-t ${tBorder}`}>
-              <div className={`flex flex-col divide-y ${isLight ? "divide-black/6" : "divide-white/6"}`}>
-                {similarAyahs.map(sa => (
-                  <div key={sa.id} className="flex items-center justify-between py-3 group">
-                    <span className="text-sm font-bold text-[#378ADD] font-mono">{sa.key}</span>
-                    <button onClick={() => setSimilarAyahs(prev => prev.filter(x => x.id !== sa.id))}
-                      className="text-xs text-[#F58C8C] opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-all">
-                      {sv.cancel || "Ukloni"}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          <div className="flex justify-end">
-          <button onClick={handleSave}
-            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all border
-              ${saved
-                ? `border-[#1D9E75]/30 text-[#1D9E75] ${isLight ? "bg-[#1D9E75]/10" : "bg-[#1D9E75]/15"}`
-                : `${theme?.button || "bg-[#1D9E75] text-white hover:bg-[#1A8E68]"} border-transparent`}`}>
-            {saved ? (sv.saved || "✓ Sačuvano") : (sv.save || "Sačuvaj")}
-          </button>
           </div>
         </div>
       )}

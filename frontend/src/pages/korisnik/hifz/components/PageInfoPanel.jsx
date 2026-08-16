@@ -1,10 +1,18 @@
-import { useState } from "react";
-import { STATUS } from "../../../../constants/hifz/STATUS";
-import { fmtDate, todayStr } from "../../../../constants/hifz/helpers";
-import { ConfidenceDots } from "../../../../components/hifz/shared/ConfidenceDots";
-import { VerseRowItem } from "./VerseRowItem";
+// ============================================================================
+// Pregled jedne stranice mushafa bez mogućnosti uređivanja - status, sigurnost
+// znanja, broj ponavljanja, greške, bilješke i lista ajeta. Uređivanje istih
+// podataka radi EditForm; razdvojeni su da bi pregled ostao čitljiv, a unos
+// zaseban.
+// ============================================================================
 
-export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVerse, onSaveVerse, verseStatuses, rowsPerPage, theme, s, editSlot }) {
+import { STATUS } from "../../../../constants/hifz/STATUS";
+import { fmtDateTime, todayStr, statusCardBg, statusBorder } from "../../../../constants/hifz/helpers";
+import { ConfidenceDots } from "../../../../components/hifz/shared/ConfidenceDots";
+import { StatusPicker } from "../../../../components/hifz/shared/StatusPicker";
+import { VerseRowItem } from "./VerseRowItem";
+import { FirstTimeHint } from "../../../../components/shared/FirstTimeHint";
+
+export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVerse, onSaveVerse, onQuickStatus, quickStatusSaving, verseStatuses, rowsPerPage, theme, s, editSlot, onViewVerseDetails }) {
   const d  = data || {};
   const st = STATUS[d.status || "prazna"];
 
@@ -36,7 +44,14 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
     <div className="flex flex-col gap-4">
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <div className={`rounded-2xl border p-4 sm:p-5 ${st.bg} ${st.border}`}>
+      {/* Kad je status "prazna" (Nije počet) kartica se vraća na neutralni izgled teme -
+          nema tint boje, da ne ostane "boja od prije" kad se status resetuje. */}
+      <div className={`rounded-2xl border p-4 sm:p-5 ${d.status && d.status !== "prazna" ? "" : tCard}`}
+        style={d.status && d.status !== "prazna" ? {
+          backgroundColor: statusCardBg(st.hex, isLight),
+          borderColor: statusBorder(st.hex, isLight),
+          borderLeft: `4px solid ${st.hex}`,
+        } : undefined}>
         <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <div>
             <span className={`text-[10px] font-semibold uppercase tracking-wider block ${tMuted}`}>
@@ -48,13 +63,28 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
           </div>
           <div className={`h-12 w-px hidden sm:block ${divider}`} />
           <div>
-            <span className={`text-[10px] font-semibold uppercase tracking-wider block mb-1 ${tMuted}`}>
+            <span className={`text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-1.5 ${tMuted}`}>
               {sp.status || "Status"}
+              {quickStatusSaving && (
+                <span className="w-2.5 h-2.5 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin" />
+              )}
             </span>
-            <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${st.dot}`} />
-              <span className={`text-lg font-bold ${st.text}`}>{statusLabelF}</span>
-            </div>
+            {onQuickStatus ? (
+              <div className={quickStatusSaving ? "opacity-50 pointer-events-none" : ""}>
+                <StatusPicker
+                  layout="pills"
+                  value={d.status || "prazna"}
+                  onChange={onQuickStatus}
+                  s={s}
+                  isLight={isLight}
+                />
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${st.dot}`} />
+                <span className={`text-lg font-bold ${st.text}`}>{statusLabelF}</span>
+              </div>
+            )}
           </div>
           {d.difficulty && d.difficulty !== "srednja" && (
             <>
@@ -204,8 +234,17 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
       {/* ── AJETI (lijevo) + HISTORIJA (desno) ───────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
-        {/* Ajeti — 3/5 */}
+        {/* Ajeti - 3/5 */}
         <div className={`lg:col-span-3 rounded-2xl border overflow-hidden ${tCard}`}>
+          {verses?.length > 0 && (
+            <div className="px-3 pt-3">
+              <FirstTimeHint
+                storageKey="tmizan_hint_verselist_seen"
+                theme={theme}
+                text="Klikni na ajet da ga proširiš — tu možeš odmah označiti status (Naučen/U toku/...) preko 'Status ajeta'. 'Vidi detalje' otvara bočni panel sa dodatnim opcijama (npr. greška na ajetu), a 'Otvori detalje' vodi na puni prikaz gdje u tabu 'Uredi' mijenjaš status, bilješke i historiju ponavljanja."
+              />
+            </div>
+          )}
           <div className={`flex items-center justify-between px-4 py-3 border-b ${tBorder}`}>
             <div>
               <h3 className={`text-sm font-bold ${tText}`}>{sp.versesOnPage || "Ajeti na stranici"}</h3>
@@ -231,13 +270,14 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
                   key={v.verse_key} verse={v}
                   verseData={verseStatuses?.[v.verse_key]}
                   onOpen={() => onOpenVerse(v)}
+                  onViewDetails={onViewVerseDetails}
                   onQuickStatus={(verseKey, newStatus) => {
                     const prev = verseStatuses?.[verseKey] || {};
                     onSaveVerse?.(verseKey, {
                       ...prev,
                       status: newStatus,
                       startDate: (!prev.startDate && newStatus !== "prazna") ? todayStr() : prev.startDate,
-                    });
+                    }, pageNum);
                   }}
                   theme={theme} s={s}
                 />
@@ -249,7 +289,7 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
           )}
         </div>
 
-        {/* Historija ponavljanja — 2/5, timeline */}
+        {/* Historija ponavljanja - 2/5, timeline */}
         <div className={`lg:col-span-2 rounded-2xl border p-4 ${tCard}`}>
           <div className="flex items-center justify-between mb-4">
             <h3 className={`text-[10px] font-semibold uppercase tracking-widest ${tSubtle}`}>
@@ -280,7 +320,7 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
                     />
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className={`text-sm font-semibold leading-none ${tText}`}>{fmtDate(h.date)}</p>
+                        <p className={`text-sm font-semibold leading-none ${tText}`}>{fmtDateTime(h.date)}</p>
                         {h.note && <p className={`text-xs mt-1.5 leading-snug ${tMuted}`}>{h.note}</p>}
                       </div>
                       {h.errors > 0 && (

@@ -1,0 +1,22 @@
+# Pokretanje aplikacije jednom komandom: docker compose up --build
+#
+# Sistem nema vlastiti poslužitelj. Poslovna logika je u klijentskoj aplikaciji
+# (moduli features/murajaah i features/talim), a Supabase istovremeno služi kao
+# baza podataka i aplikacijski sloj - autentifikacija, sigurnosna pravila (RLS)
+# i zakazani poslovi izvršavaju se unutar same baze. Zato je ovdje samo jedan
+# servis: izgrađena klijentska aplikacija koju poslužuje nginx.
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      # VITE_* varijable se ugrađuju u JavaScript bundle u trenutku gradnje,
+      # ne čitaju se u runtime-u, pa moraju ići kao build argumenti.
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+    container_name: tmizan-frontend
+    ports:
+      - "8080:80"
+    restart: unless-stopped

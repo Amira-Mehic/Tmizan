@@ -26,4 +26,12 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  {
+    // Testovi se pokreću preko Node-a (scripts/run-tests.js) i koriste process.exit()
+    // za exit kod — trebaju Node globale uz browser globale.
+    files: ['**/*.test.js'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
 ])

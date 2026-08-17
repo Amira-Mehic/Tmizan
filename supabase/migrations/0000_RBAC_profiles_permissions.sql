@@ -3,7 +3,7 @@
 -- te evidencija izmjena. Postavlja i sigurnosna pravila na nivou reda (RLS),
 -- pa svaki korisnik od početka vidi samo ono što smije.
 --
--- Napomena za dalje: shema uloga postavljena ovdje (roles, permissions,
+-- Shema uloga postavljena ovdje (roles, permissions,
 -- role_permissions, user_roles) kasnije je zamijenjena jednostavnijom tabelom
 -- app_user_roles u migraciji 0011. Ove tabele ostaju u historiji jer se na njih
 -- oslanjaju migracije koje dolaze prije 0011.

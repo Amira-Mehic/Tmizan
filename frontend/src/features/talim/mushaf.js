@@ -88,8 +88,8 @@ export function scopeToPages(scope) {
 }
 
 // ── Ukupno redova za opseg ──────────────────────────────────────────────────
-// Napomena: prve dvije stranice mushafa imaju manje redova; za plan koristimo
-// aproksimaciju punih stranica (dovoljno precizno za procjenu datuma).
+// Prve dvije stranice mushafa imaju manje redova, ali se za plan uzima
+// aproksimacija punih stranica, što je dovoljno precizno za procjenu datuma.
 export function scopeToLines(scope, editionId) {
   const pages = scopeToPages(scope);
   return pages.length * getEdition(editionId).linesPerPage;

@@ -14,9 +14,9 @@ import { METHODS } from "./methods.js";
 
 export const UNIT_TYPES = ["red", "ajet", "stranica", "sura", "dzuz"];
 
-// ── Pomoćne funkcije za datume (radimo samo s "YYYY-MM-DD" stringovima) ──────
-// VAŽNO: ne koristimo toISOString() jer prebacuje u UTC pa u našoj vremenskoj
-// zoni (UTC+1/+2) datum sklizne dan unazad. Radimo s lokalnim komponentama.
+// ── Pomoćne funkcije za datume, isključivo nad "YYYY-MM-DD" stringovima ─────
+// toISOString() se ovdje ne koristi jer prebacuje u UTC, pa u vremenskoj zoni
+// UTC+1/+2 datum sklizne dan unazad. Zato se radi s lokalnim komponentama.
 function fmt(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");

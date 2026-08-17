@@ -235,7 +235,7 @@ create table if not exists translations (
 );
 
 -- 7) LAYOUT REDOVA po izdanju - red na kojem ajet POČINJE (za planer po redovima).
---    PUNI seed skripta (za sada medinski_15 iz QUL qpc-hafs podataka).
+--    Puni se seed skriptom, iz QUL qpc-hafs podataka za izdanje medinski_15.
 create table if not exists mushaf_layout (
   edition_id   text not null references mushaf_editions(id),
   verse_key    text not null,

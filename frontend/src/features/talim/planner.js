@@ -2,7 +2,7 @@
 // Ta'lim - generator plana učenja (Koraci 3, 4 i 5)
 //
 // Korak 3: kapacitet u redovima/stranicama (NE u minutama)
-// Korak 4: zaključavanje - datum (računamo tempo) ili tempo (računamo datum),
+// Korak 4: zaključavanje - datum daje tempo, ili tempo daje datum,
 //          uz provjeru realnosti
 // Korak 5: metoda i smjer (metode su u zasebnim fajlovima)
 //
@@ -83,7 +83,7 @@ function addWorkingDays(startDate, days, restWeekdays) {
   return d;
 }
 
-// ── Korak 4a: korisnik zaključa DATUM → računamo potreban tempo ─────────────
+// ── Korak 4a: korisnik zaključa DATUM, iz njega se računa potreban tempo ────
 export function tempoForDate({ totalLines, startDate, targetDate, editionId, restWeekdays = [] }) {
   const days = workingDaysBetween(startDate, targetDate, restWeekdays);
   if (days < 1) throw new Error("Datum završetka mora biti poslije početka");
@@ -95,8 +95,8 @@ export function tempoForDate({ totalLines, startDate, targetDate, editionId, res
   return {
     linesPerDay,
     realistic,
-    // ako je nerealno - predloži pomjeranje datuma ILI veći tempo,
-    // ali ODLUKU ostavljamo korisniku
+    // Ako je nerealno, nudi se pomjeranje datuma ILI veći tempo,
+    // ali odluka ostaje na korisniku.
     suggestion: realistic
       ? null
       : {
@@ -107,7 +107,7 @@ export function tempoForDate({ totalLines, startDate, targetDate, editionId, res
   };
 }
 
-// ── Korak 4b: korisnik zaključa TEMPO → računamo datum ──────────────────────
+// ── Korak 4b: korisnik zaključa TEMPO, iz njega se računa datum ─────────────
 export function dateForTempo({ totalLines, linesPerDay, startDate, restWeekdays = [] }) {
   if (!linesPerDay || linesPerDay <= 0) throw new Error("Tempo mora biti veći od 0");
   const days = Math.ceil(totalLines / linesPerDay);

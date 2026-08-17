@@ -16,7 +16,7 @@ export function PageInfoPanel({ pageNum, data, verses, loadingVerses, onOpenVers
   const d  = data || {};
   const st = STATUS[d.status || "prazna"];
 
-  // ── Računamo ajete i redove ──────────────────────────────────────────────
+  // ── Brojanje ajeta i redova ──────────────────────────────────────────────
   const rpp           = rowsPerPage || 15;
   const totalVerses   = verses?.length || 0;
   const learnedVerses = verses?.filter(v => {

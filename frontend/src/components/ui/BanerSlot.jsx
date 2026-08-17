@@ -35,21 +35,9 @@ async function fetchIpLocation() {
   return ipLocationPromise
 }
 
-// ─── Browser Geolocation helper (trenutno se ne poziva - zadržan za buduću upotrebu) ───
-function _fetchGeoLocation() {
-  return new Promise(resolve => {
-    if (!navigator.geolocation) return resolve(null)
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      ()  => resolve(null),
-      { timeout: 5000 }
-    )
-  })
-}
-
-// ─── Usporedi lokacije - vraća confidence score 0–2 ────────────────────────
+// ─── Poređenje lokacija, vraća pouzdanost od 0 do 2 ─────────────────────────
 // 0 = profil ima lokaciju, ali IP kaže drugu državu (nepouzdano)
-// 1 = imamo samo profil (IP nedostupan)
+// 1 = postoji samo profil (IP nedostupan)
 // 2 = IP potvrđuje ono što piše u profilu
 function locationMatch(profile, ip) {
   if (!profile?.country) return 0

@@ -22,9 +22,10 @@ export default function Button({
 }) {
   const { theme } = useTheme()
 
-  // Dinamički definiramo stilove na osnovu trenutne teme
+  // Stilovi se izvode iz trenutne teme.
   const themeVariants = {
-    // Koristimo theme.accent za glavnu boju i theme.bg za tekst ako je tema "warm_peach" (svijetli gumb, crni tekst)
+    // Glavna boja dolazi iz theme.accent. Na temi "warm_peach" dugme je svijetlo,
+    // pa tekst mora biti crn da ostane čitljiv.
     primary: `${theme.accent} ${theme.id === 'warm_peach' ? 'text-black' : 'text-white'} hover:opacity-90`,
     
     // Outline koristi boju teksta teme za border i tekst

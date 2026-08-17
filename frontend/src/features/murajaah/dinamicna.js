@@ -17,7 +17,7 @@
 // ovaj ciklus" ako je last_repeat >= cycleStart. cycleStart/cyclesDone su
 // mali PARAMETRI plana (i dalje u rotation_state, ne po stranici).
 //
-// VAŽNO: ovo je NAMJERNO odvojeno od Femi bi-ševk (femi.js) - dijele istu
+// Ovo je NAMJERNO odvojeno od Femi bi-ševk (femi.js) - dijele istu
 // opću ideju ("rasporedi stranice kroz vrijeme"), ali femi radi na FIKSNOJ
 // sedmici od 7 dana i unaprijed dijeli sve stranice na 7 dijelova, dok
 // dinamična metoda svaki dan iznova računa kvotu na osnovu proteklog

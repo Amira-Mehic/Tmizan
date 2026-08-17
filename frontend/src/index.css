@@ -6,7 +6,7 @@
   color-scheme: dark;
 }
 
-/* Date inputi — override browser dark-only stilizacije */
+/* Polja za datum: poništavanje tamne stilizacije koju browser nameće sam */
 input[type="date"].light-input {
   color-scheme: light;
   background-color: rgba(0, 0, 0, 0.05);
@@ -22,7 +22,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Naslovi na dashboard-tipu stranica — izdvojeni font za profesionalniji ton,
+/* Naslovi na stranicama tipa dashboard dobijaju izdvojen font,
    odvojen od tijela teksta (koje ostaje na sistemskom fontu). */
 .font-heading {
   font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;

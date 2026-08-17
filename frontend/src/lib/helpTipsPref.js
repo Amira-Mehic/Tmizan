@@ -3,7 +3,7 @@
 // localStorage (nije po korisniku - čisto lokalna postavka uređaja/browsera).
 // Budući da je SidebarLayout.jsx trajno montiran (persistentan layout), a
 // toggle je na drugoj stranici (Settings.jsx), obični native "storage" event
-// se NE okida unutar istog taba - zato koristimo i custom window event da se
+// se NE okida unutar istog taba, pa se uz njega šalje i vlastiti window event da se
 // SidebarLayout odmah osvježi kad se postavka promijeni.
 // ============================================================================
 

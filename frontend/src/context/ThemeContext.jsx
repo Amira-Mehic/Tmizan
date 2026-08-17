@@ -14,13 +14,13 @@ const ThemeContext = createContext()
 // flat (jedna boja) kojoj se kartice i sekcije prilagođavaju osvjetljenjem,
 // ne zasebnim nijansama. particleColors namjerno nisu dirani u ovom prolazu.
 //
-// VAŽNO: card/cardAlt/cardSub imaju `border border-[ISTA_BOJA_KAO_BG]`.
+// card/cardAlt/cardSub imaju `border border-[ISTA_BOJA_KAO_BG]`.
 // Ovo NIJE vizuelni border (boja je identična pozadini kartice, dakle
 // nevidljiv) - postoji zato što desetine komponenti kroz app dodaju svoju
 // vlastitu golu `border` Tailwind klasu pored ${theme.card} (npr. `rounded-xl
 // border ${cardCls}`). Bez eksplicitne border-boje ovdje, taj `border`
 // pada na Tailwind-ov default (siva), pa se na kartici pojavi ivica koja
-// se ne poklapa s bojom kartice - baš ono što ne želimo. Postavljanjem
+// se ne poklapa s bojom kartice. Postavljanjem
 // border-boje na identičnu vrijednost kao bg, svaka takva kartica ostaje
 // flat na cijeloj aplikaciji i u svih 7 tema, bez obzira gdje se koristi.
 // eslint-disable-next-line react-refresh/only-export-components -- dijeljena konstanta uz Provider u istom fajlu

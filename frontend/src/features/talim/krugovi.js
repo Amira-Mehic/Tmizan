@@ -6,7 +6,7 @@
 // ponavljaju se prethodni - učenje i ponavljanje su spojeni.
 // Datum završetka je PROCJENA (na osnovu strukture 30 str./krug).
 //
-// Napomena: koristi stvarne granice džuzeva (džuz 1 ima 21, džuz 30 ima 23
+// Koriste se stvarne granice džuzeva (džuz 1 ima 21, džuz 30 ima 23
 // stranice), pa krugovi rade s tačnim brojevima stranica iz mushafa.
 // ============================================================================
 

@@ -160,8 +160,8 @@ export async function advanceRotation(userId, state, todayResult, { date = null 
   if (error) throw error;
 
   // Statistika ciklusa: kad se odradi ZADNJA jedinica u definisanom
-  // redoslijedu, brojimo to kao završen ciklus (aproksimacija - dovoljno
-  // dobro dok nemamo stvarne podatke o zaostacima, vidi napomenu u planu).
+  // redoslijedu, to se broji kao završen ciklus. Aproksimacija je dovoljna
+  // dok ne postoje stvarni podaci o zaostacima.
   let wrapped = false;
   if (state.type === "dzuzevi") wrapped = pagesDone.includes(getJuzPages(state.items.at(-1)).at(-1));
   else if (state.type === "stranice" || state.type === "seton") wrapped = pagesDone.includes(state.items.at(-1));

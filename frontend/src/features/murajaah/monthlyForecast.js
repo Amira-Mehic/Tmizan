@@ -173,7 +173,7 @@ export function forecastFemiWeekly(femiRow, { days = DEFAULT_FORECAST_DAYS, star
 // ── INTERVALNE METODE (fibonacci/tri_dana/sedam_dana/srs) - OPTIMISTIČNA
 //    projekcija: pretpostavlja da će svako ponavljanje proći bez greške.
 //    blocks: niz redova iz review_blocks (engine.js oblik, camelCase).
-//    NAPOMENA: block.nextReviewOn je od Motora B (sati) PUNI ISO timestamp,
+//    block.nextReviewOn je kod Motora B (sati) PUNI ISO timestamp,
 //    ne datum - ovdje se grupiše po KALENDARSKOM danu (slice 0,10) radi
 //    prikaza u dnevnoj projekciji. ────────────────────────────────────────
 export function forecastIntervalBlocks(blocks, { days = DEFAULT_FORECAST_DAYS, startDate } = {}) {

@@ -63,7 +63,7 @@ export default function RegisterPage() {
     gender: ""
   })
 
-  // Koristimo direktno theme.accent koji je definisan u ThemeContext.jsx
+  // Akcentna boja se uzima direktno iz teme (ThemeContext.jsx).
   const accentColor = theme.accent;
 
   const handleChange = (e) => {

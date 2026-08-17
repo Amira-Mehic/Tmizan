@@ -78,7 +78,7 @@ export function useActiveLearningPlans() {
         const todayEntry = monthlyPlan?.days?.find((day) => day.date === today) || null;
 
         // Redom / Krugovi / Halka ne prate linearni mjesečni raspored - "šta
-        // je danas na redu" računamo direktno iz njihovog vlastitog stanja
+        // je danas na redu" izvodi se direktno iz njihovog vlastitog stanja
         // (isto što će Učenje danas i pokazati), umjesto pogrešnog reda
         // izvedenog iz tempa u redovima/strancama/ajetima.
         if (tp.method !== "postepeno") {
@@ -133,9 +133,9 @@ export function useActiveLearningPlans() {
         doneToday: true,
       }));
       // Hifz Tracker automatski prati isto ovo dnevno učenje - nema potrebe da
-      // korisnik ručno duplo označava stranice tamo. Napomena: kod "ajeti"
-      // tempa from/to su {surah,ayah}, ne {page,line} - sync stranica tu
-      // (namjerno) preskačemo, jer syncLearnedLineRange radi samo sa page/line.
+      // korisnik ručno duplo označava stranice tamo. Kod "ajeti" tempa from/to
+      // su {surah,ayah}, a ne {page,line}, pa se sinhronizacija stranica tu
+      // namjerno preskače - syncLearnedLineRange radi samo sa page/line.
       if (todayEntry?.learning && todayEntry.learning.unit !== "ajeti") {
         syncLearnedLineRange(userId, entry.talimPlan.mushaf_edition, todayEntry.learning.from, todayEntry.learning.to);
       }

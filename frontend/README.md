@@ -1,18 +1,71 @@
-# React + Vite
+# Tmizan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Informacioni sistem za evidenciju i planiranje hifza Kur'ana. Progresivna web
+aplikacija izrađena u Reactu, s Vite alatom za gradnju i Supabase platformom kao
+bazom podataka i aplikacijskim slojem.
 
-Currently, two official plugins are available:
+Diplomski rad, Univerzitet u Zenici, Politehnički fakultet.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Pokretanje
 
-## React Compiler
+Potreban je Node.js verzije 20 ili novije.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```
+npm install
+npm run dev
+```
 
-Note: This will impact Vite dev & build performances.
+Aplikacija se otvara na `http://localhost:5173`.
 
-## Expanding the ESLint configuration
+Prije pokretanja prekopirati `.env.example` u `.env` i upisati podatke Supabase
+projekta:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+## Pokretanje kroz Docker
+
+Iz korijena projekta, jednom komandom:
+
+```
+docker compose up --build
+```
+
+Aplikacija se otvara na `http://localhost:8080`.
+
+## Testovi
+
+```
+node scripts/run-tests.js
+```
+
+Pokreće sve jedinične testove i ispisuje zbirni rezultat. Testovi pokrivaju
+motore ponavljanja i generisanje plana učenja.
+
+Statička provjera koda:
+
+```
+npx eslint src
+```
+
+## Arhitektura
+
+Sistem nema vlastiti aplikacijski poslužitelj. Poslovna logika smještena je u
+klijentskoj aplikaciji, a Supabase istovremeno služi kao baza podataka i
+aplikacijski sloj: autentifikacija, sigurnosna pravila na nivou reda (RLS),
+funkcije baze i zakazani poslovi izvršavaju se unutar same baze.
+
+## Struktura
+
+| Putanja | Sadržaj |
+|---|---|
+| `src/features/murajaah` | motori ponavljanja, metode i modifikatori |
+| `src/features/talim` | generisanje plana učenja i mjesečnog rasporeda |
+| `src/pages` | ekrani, razdvojeni po ulogama |
+| `src/components` | zajedničke komponente sučelja |
+| `src/context` | globalno stanje: prijava, tema, jezik |
+| `src/hooks` | dohvat i obrada podataka |
+| `../supabase/migrations` | migracije baze podataka |
+| `../supabase/seed` | punjenje referentnog kur'anskog sadržaja |

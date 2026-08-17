@@ -152,7 +152,7 @@ export async function regenerateMonthlyPlan(userId, talimPlan, year, month) {
   const totalLines = pages.length * getEdition(talimPlan.mushaf_edition).linesPerPage;
 
   // startLine = stvarno naučeno do sada (talim_plans.learned_lines je izvor istine,
-  // ali čuvamo se i eventualnog zaostatka iz dana koji su done u ovom mjesecu)
+  // ali se uzima u obzir i zaostatak iz dana označenih kao odrađeni u ovom mjesecu)
   const doneLines = existing.days
     .filter((d) => d.done)
     .reduce((sum, d) => sum + (Number(d.actualLines) || d.learning?.lineCount || 0), 0);
@@ -211,9 +211,9 @@ export async function markDayDone(userId, talimPlan, monthlyPlan, date, actualLi
 
   // automatski preračun datuma završetka (isti tempo - samo se datum pomjera
   // naprijed/nazad zavisno od toga da li je korisnik naučio manje ili više od plana)
-  // NAPOMENA: ovaj preračun je linijski (planner.js) - kod "ajeti" tempa
-  // learned_lines zapravo broji AJETE, pa se preciznost datuma tu ne
-  // preračunava (zadržava se postojeći procijenjeni datum); glavni napredak
+  // Preračun je linijski (planner.js), pa se kod "ajeti" tempa
+  // u learned_lines zapravo broje AJETI, pa se preciznost datuma tu ne
+  // preračunava, nego ostaje postojeći procijenjeni datum. Glavni napredak
   // (learned_lines/talim_daily_log) i dalje ide tačno.
   let newTargetDate = talimPlan.target_date;
   if (!isAjetiTempo(talimPlan)) {

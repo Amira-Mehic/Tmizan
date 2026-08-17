@@ -226,7 +226,7 @@ export function updateDay(plan, date, changes) {
 // dana. Bez `today` ponašanje je kao ranije (samo done dani su zaštićeni).
 export function regenerateFromTempo(plan, { pages, editionId, linesPerDay, restDays, startLine, today }) {
   // Već naučeni dani ne smiju "trošiti" redove u regeneraciji (ta linija je već
-  // potrošena u startLine) - privremeno ih tretiramo kao slobodne dane samo za
+  // potrošena u startLine), pa se privremeno tretiraju kao slobodni dani samo za
   // potrebe raspodjele, da bi novi tempo ispravno krenuo TAČNO od startLine na
   // prvom sljedećem neodučenom danu. Isto vrijedi i za prošle-a-neodučene dane.
   const doneDates = plan.days.filter((d) => d.done).map((d) => d.date);

@@ -49,16 +49,16 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
         runtimeCaching: [
-          // Supabase REST/auth pozivi  nisu u runtimeCaching.
+          // Supabase REST i auth pozivi namjerno nisu u runtimeCaching.
           // Service worker koji presreće te pozive (čak i sa NetworkFirst) je
           // izazivao nasumične "No API key found in request" 500/400 greške
-          // (sessions, monthly_plans) — vjerovatno gubljenje apikey/Authorization
+          // (sessions, monthly_plans), vjerovatno zbog gubljenja apikey i Authorization
           // headera prilikom presretanja cross-origin zahtjeva sa custom
           // headerima. Autentificirani API pozivi ionako ne bi trebali biti
           // keširani u dijeljenom browser kešu (rizik zastarjelih/pomiješanih
           // podataka), pa ide direktno na mrežu, bez SW interferencije.
           {
-            // statične slike/fontovi — cache-first
+            // Statične slike i fontovi: prvo keš, pa mreža.
             urlPattern: ({ request }) =>
               request.destination === 'image' || request.destination === 'font',
             handler: 'CacheFirst',

@@ -221,7 +221,7 @@ export default function TalimWizard() {
   const [activated, setActivated] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // SVI trenutno aktivni planovi (može ih biti više - vidi napomenu uz activate()
+  // SVI trenutno aktivni planovi (može ih biti više - pravila su opisana uz activate()
   // niže: "cijeli" plan je uvijek sam, sura/džuz/raspon planovi mogu koegzistirati)
   // + historija neaktivnih planova (završeni / zakazani za budući datum / pauzirani)
   const [activePlans, setActivePlans] = useState([]);

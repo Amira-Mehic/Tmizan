@@ -3,7 +3,7 @@
 // reaktivacija, brisanje, reset rasporeda, i izračun statistika za prikaz
 // (Hifz Planner - lista SVIH planova, ne samo trenutno aktivnog).
 //
-// VAŽNO - više aktivnih planova: dozvoljeno je da više planova bude aktivno
+// Više aktivnih planova: dozvoljeno je da više planova bude aktivno
 // ISTOVREMENO, ali NAJVIŠE JEDAN po (efektivnoj) metodi - rotation_state i
 // femi_state čuvaju stanje jedinstveno po (user_id, method), a review_blocks
 // nema plan_id kolonu da razlikuje kojem planu blok pripada. Zato se "na

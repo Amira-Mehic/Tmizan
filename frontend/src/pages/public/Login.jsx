@@ -56,7 +56,7 @@ export default function LoginPage() {
   const [resendLoading, setResendLoading] = useState(false)
   const [resendSent, setResendSent] = useState(false)
 
-  // Koristimo direktno theme.accent iz contexta
+  // Akcentna boja se uzima direktno iz teme.
   const accentColor = theme.accent;
 
   const handleChange = (e) => {
@@ -164,7 +164,7 @@ const handleLogin = async (e) => {
   }
 
   return (
-    /* KLJUČ: Koristimo ${theme.bgGradient} isto kao na Registeru da bi se pozadina mijenjala */
+    /* Ista pozadinska klasa kao na registraciji, da se pozadina mijenja s temom */
     <div className={`min-h-screen ${theme.bgGradient} bg-grain relative z-0 flex items-center justify-center transition-all duration-500 py-12 px-4 overflow-hidden`}>
       <ParticleBackground colors={theme.particleColors} />
       

@@ -60,17 +60,19 @@ export default function Home() {
   ]
   const METODE = ["m20", "mFibonacci", "mKrugovi", "mSrs", "mFemi"]
 
-  // Video pozadine po temi 
+  // Video pozadine po temi. Broj se odnosi na fajl public/tmizanN.mp4, pa svaka
+  // tema mora imati unos - neupisana tema pada na podrazumijevani video.
   const HERO_MEDIA = {
     beige_white:       { n: 1 },
     dark_beige_orange: { n: 2 },
     purple_blue:       { n: 3 },
     emerald_dark:      { n: 4 },
     black_slate:       { n: 5 },
+    warm_peach:        { n: 2 },
     pink_soft:         { n: 6 },
   }
   const n = HERO_MEDIA[theme?.id]?.n
-  const heroVideo = n ? `/tmizan${n}.mp4` : "/tmizan.mp4"
+  const heroVideo = `/tmizan${n || 1}.mp4`
   const heroPoster = "/hero.jpg"
   const STATS = [
     { to: 604, suffix: "", label: t("home.statPages") },

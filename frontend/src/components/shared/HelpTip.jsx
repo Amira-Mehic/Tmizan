@@ -4,7 +4,7 @@
 // generičkom bg/border kombinacijom), pa se može ubaciti bilo gdje bez
 // dodatnog "prop drilling"-a.
 //
-// VAŽNO: popover se renderuje kroz portal u document.body, POZICIONIRAN
+// Popover se renderuje kroz portal u document.body, POZICIONIRAN
 // preko getBoundingClientRect() dugmeta (position: fixed, klampovano unutar
 // viewporta). Ovo je namjerno - apsolutno pozicioniran popover unutar
 // sidebara/kartica se REZAO na pola, jer:

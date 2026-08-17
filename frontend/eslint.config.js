@@ -28,7 +28,7 @@ export default defineConfig([
   },
   {
     // Testovi se pokreću preko Node-a (scripts/run-tests.js) i koriste process.exit()
-    // za exit kod — trebaju Node globale uz browser globale.
+    // za exit kod, pa im trebaju Node globale uz browser globale.
     files: ['**/*.test.js'],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },

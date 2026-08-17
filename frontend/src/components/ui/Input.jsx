@@ -16,7 +16,7 @@ export default function Input({ size = "md", variant = "default", className = ""
   const { theme } = useTheme()
 
   const variants = {
-    // Koristimo border i akcentnu boju iz teme da input ne "vrišti" bjelinom
+    // Border i akcentna boja dolaze iz teme, da polje ne "vrišti" bjelinom
     // niti nosi nasumičnu plavu koja se ne uklapa u tamnu/roza/zelenu temu
     default: `border-2 ${theme.card} focus:ring-2 ${theme.ring}`,
     error: "border-2 border-red-500",

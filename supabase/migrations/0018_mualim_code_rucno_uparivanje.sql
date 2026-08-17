@@ -47,7 +47,7 @@ create trigger trg_assign_mualim_code
 update profiles set mualim_code = lpad((floor(random() * 900000) + 100000)::int::text, 6, '0')
 where role = 'mualim' and mualim_code is null;
 
--- Ručni zahtjev suprotnom rodu - provjerava email+kod BEZ da ih ikad izloži
+-- Ručni zahtjev suprotnom rodu. Provjerava email i kod, ali ih nikad ne otkriva
 -- klijentu. Vraća samo 'ok' / 'not_found', nikad koji dio nije tačan.
 create or replace function public.request_mualim_manual(p_email text, p_code text)
 returns text

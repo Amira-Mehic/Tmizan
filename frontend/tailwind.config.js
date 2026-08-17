@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "class", // KLJUČ za theme switch
+  darkMode: "class", // Prebacivanje teme se radi klasom na <html>, ne medijskim upitom.
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

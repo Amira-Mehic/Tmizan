@@ -1,14 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import path from 'path'
+import path from 'node:path'
 
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['favicon.svg'],
       manifest: {
         name: 'Tmizan',
         short_name: 'Tmizan',
@@ -79,13 +79,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   server: {
-    host: true, // izloži na mreži (0.0.0.0) — da telefon na istom WiFi-ju može pristupiti
+    // Sluša na svim mrežnim adresama, da se aplikacija može otvoriti i s
+    // telefona na istoj mreži, radi provjere PWA ponašanja na mobilnom.
+    host: true,
   },
   preview: {
-    host: true, // i za `npm run preview` (produkcijski build)
+    // Isto vrijedi i za produkcijski build pokrenut kroz `npm run preview`.
+    host: true,
   },
 })

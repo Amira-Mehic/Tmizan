@@ -476,7 +476,7 @@ export default function TalimWizard() {
     pages.length > 0,                                 // 2→3: mora biti odabran i validan opseg
     lock === "tempo" || (lock === "datum" && !!targetDate), // 3→4: cilj mora biti odabran (i datum ako je "znam datum")
     lock === "datum" || linesPerDay > 0,               // 4→5: ako je tempo zaključan, mora biti unesena količina/period
-    true,                                              // 5→6: vrijeme je informativno, nije obavezno
+    true,                                              // Korak 5 na 6: vrijeme je informativan podatak, plan se pravi i bez njega.
   ];
 
   // Najdalji korak do kojeg se smije doći - sve prije mora biti popunjeno.

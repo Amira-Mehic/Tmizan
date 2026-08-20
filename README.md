@@ -47,7 +47,7 @@ sigurnosna pravila baze (Row Level Security), a ne tajnost ključa.
 ## Baza podataka
 
 Shema se postavlja migracijama iz `supabase/migrations`, redom po broju.
-Referentni kur'anski sadržaj puni se skriptama iz `supabase/seed`.
+Referentni Kur'anski sadržaj puni se skriptama iz `supabase/seed`.
 
 ## Testovi
 

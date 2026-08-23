@@ -59,6 +59,7 @@ create table if not exists public.user_roles (
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
+  role text default 'korisnik',
   is_active boolean default true,
   deleted_at timestamptz,
   created_at timestamptz default now(),

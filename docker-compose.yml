@@ -2,9 +2,12 @@
 #
 # Sistem nema vlastiti poslužitelj. Poslovna logika je u klijentskoj aplikaciji
 # (moduli features/murajaah i features/talim), a Supabase istovremeno služi kao
-# baza podataka i aplikacijski sloj - autentifikacija, sigurnosna pravila (RLS)
-# i zakazani poslovi izvršavaju se unutar same baze. Zato je ovdje samo jedan
-# servis: izgrađena klijentska aplikacija koju poslužuje nginx.
+# baza podataka i aplikacijski sloj: autentifikacija, sigurnosna pravila (RLS)
+# i zakazani poslovi izvršavaju se unutar same baze.
+#
+# Kontejner aplikacije priključuje se na mrežu koju je napravio Supabase alat,
+# pa nginx zahtjeve prema bazi prosljeđuje ulaznom gatewayu unutar te mreže.
+# Preglednik zove samo adresu aplikacije, a prema van je otvoren jedan port.
 
 services:
   frontend:
@@ -20,3 +23,14 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+    networks:
+      - default
+      - supabase
+
+networks:
+  # Mrežu kreira Supabase alat pri pokretanju naredbe supabase start. Naziv se
+  # izvodi iz naziva foldera projekta, pa se kod drugačijeg naziva postavlja
+  # varijabla SUPABASE_NETWORK prije pokretanja.
+  supabase:
+    external: true
+    name: ${SUPABASE_NETWORK:-supabase_network_Tmizan}

@@ -24,7 +24,7 @@ const FBULLETS = {
   bs: {
     tracker: ["Praćenje po stranici i po ajetu", "Statusi, sigurnost i greške", "Prijevod i tefsir uz svaki ajet", "Historija ponavljanja s datumima"],
     planner: ["Biraš mushaf i opseg učenja", "Mjeri se u redovima, ne minutama", "Tačan procijenjeni datum završetka", "Vizuelni put do cilja"],
-    murajaah: ["Preko 15 priznatih metoda", "Intervalne i kružne metode", "Naučni SRS i originalni Tmizan model", "Metode se mogu kombinovati"],
+    murajaah: ["Petnaest metoda ponavljanja", "Intervalne i kružne metode", "Naučni SRS i originalni Tmizan model", "Metode se mogu kombinovati"],
     mualim: ["Prati napredak svakog učenika", "Mapa slabih mjesta i greške", "Sesije i poruke", "Zadaci i prioritetni planovi"],
     print: ["Mjesečni plan s datumima", "Print ili izvoz u PDF/Word", "Slobodni dani i pojačano ponavljanje", "Uređivanje bilješki prije printa"],
     test: ["Testiraj baš slabe ajete", "Most: prethodni — ??? — sljedeći", "Historija i trend, privatno", "Označavanje riječi s greškom"],
@@ -32,7 +32,7 @@ const FBULLETS = {
   en: {
     tracker: ["Track by page and by ayah", "Statuses, confidence and mistakes", "Translation and tafsir per ayah", "Repetition history with dates"],
     planner: ["Choose mushaf and scope", "Measured in lines, not minutes", "Exact estimated finish date", "Visual path to your goal"],
-    murajaah: ["Over 15 recognized methods", "Interval and cyclic methods", "Scientific SRS and original Tmizan model", "Methods can be combined"],
+    murajaah: ["Fifteen review methods", "Interval and cyclic methods", "Scientific SRS and original Tmizan model", "Methods can be combined"],
     mualim: ["Track each student's progress", "Weak-spots map and mistakes", "Sessions and messages", "Tasks and priority plans"],
     print: ["Monthly plan with dates", "Print or export to PDF/Word", "Rest days and extra review", "Edit notes before printing"],
     test: ["Test exactly the weak ayahs", "Bridge: previous — ??? — next", "History and trend, private", "Word-level mistake marking"],

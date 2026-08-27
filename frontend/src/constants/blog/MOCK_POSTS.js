@@ -202,6 +202,127 @@ Tmizan automatski prati tvoj raspored ponavljanja i obavještava te kada koji di
     featured: false,
     published: true,
   },
+  {
+    id: "7",
+    slug: "metode-ponavljanja-kurana",
+    title: "Petnaest metoda ponavljanja Kur'ana — koja je prava za tebe?",
+    titleEn: "Fifteen Qur'an Review Methods — Which One Is Right for You?",
+    excerpt: "Ponavljanje je ono što tvoj hifz čini trajnim. Ovih petnaest metoda pokriva svakoga — od potpunih početnika do hafiza koji već imaju kompletan Kur'an napamet. Evo kratkog vodiča kroz svaku.",
+    excerptEn: "Review is what makes your hifz permanent. These fifteen methods cover everyone, from complete beginners to huffaz who already hold the whole Qur'an. Here's a short guide through each one.",
+    content: `Kad naučiš novu stranicu Kur'ana, pravi posao tek počinje. Samo učenje je relativno lako — teško je zadržati sve što si naučio, mjesecima i godinama poslije. Za to služi murajaa, ponavljanje onoga što već znaš, i upravo je ponavljanje ono što jedan hifz čini trajnim umjesto privremenim.
+
+Problem je što svaki hafiz pamti drugačije i ima drugačije potrebe. Neko je tek počeo i boji se da će zaboraviti stranicu koju je jučer naučio. Neko već ima priličan dio hifza i samo želi da ga održava svježim. Neko ima muallima koji mu zadaje raspored, a neko uči potpuno sam. Zato u Tmizanu postoji petnaest metoda ponavljanja — da svako pronađe onu koja mu najviše odgovara, umjesto da se prilagođava jednom jedinom kalupu.
+
+Ispod je kratak pregled svake metode. Metodu možeš izabrati i promijeniti u svakom trenutku, u Hifz Planeru pod korakom "Metoda".
+
+## Fibonacci (1→2→3→5→8)
+Kad nešto naučiš, ponoviš ga sutra, pa prekosutra, pa za tri dana, pa za pet, pa za osam dana — svaki put je razmak veći. Ako pogriješiš, vraćaš se na početak niza. Pogodna je za one koji redovno uče i brzo napreduju, jer razmak sam prati koliko dobro nešto znaš.
+
+## Tri dana
+Sve što naučiš prolazi kroz tri uzastopna dana ponavljanja — danas, sutra i prekosutra. Tek kad tri puta zaredom ponoviš bez greške, prelaziš na rjeđe, sedmično i mjesečno ponavljanje. Jednostavna je i predvidljiva, idealna za početnike koji se boje da će zaboraviti ono što su upravo naučili.
+
+## Sedam dana
+Svaku novu stranicu ili suru ponavljaš sedam dana zaredom, bez preskakanja, a onda slijedi dvosedmična pauza prije novog kruga. Sporija je od ostalih metoda, ali gradi vrlo čvrsto pamćenje jer daje dovoljno vremena da se gradivo zaista usvoji. Pogodna je za one koji rade polako i temeljito, ili koji su ranije brzo zaboravljali naučeno.
+
+## Sistem džuzeva
+Najstarija i najraširenija hafiska metoda: cijeli Kur'an je podijeljen na 30 džuzeva, i svaki dan ponavljaš jedan džuz, tako da za mjesec dana prođeš kompletan hifz. Ako još nemaš naučen cijeli Kur'an, krug se prilagođava broju džuzeva koje već znaš. Odlična je za one koji već imaju priličan dio hifza i žele ga trajno održavati.
+
+## Po stranicama
+Sam biraš koliko stranica dnevno želiš ponoviti — recimo deset — i svaki dan dobijaš sljedeći set stranica, bez obzira kad si ih naučio ili kojem džuzu pripadaju. Kad prođeš sve naučene stranice, krug kreće ispočetka. Idealna je za one koji vole slobodu i žele sami prilagođavati tempo prema tome koliko vremena tog dana imaju.
+
+## Šetonova metoda (8 dijelova)
+Cijeli tvoj hifz se dijeli na osam približno jednakih dijelova, i svaki dan ponavljaš jedan dio — tako za osam dana prođeš sve što znaš, čak dva puta sedmično. Intenzivnija je od sistema džuzeva i drži znanje uvijek svježim. Pogodna je za napredne hafize i studente koji trebaju biti spremni za recitovanje pred muallimom u svakom trenutku.
+
+## Novo i staro
+Svaku sesiju ponavljanja dijeliš na dva dijela: pola vremena posvetiš onome što si naučio u zadnjih dvije sedmice ("novo"), a pola onome što si naučio prije mjesec dana ili više ("staro"). Tako paziš i da ti svježe znanje ne izblijedi, i da se starije gradivo ne zaboravi. Dobra je za sve koji napreduju, ali se boje da će zaboraviti ono što su ranije naučili.
+
+## Na osnovu grešaka
+Umjesto fiksnog rasporeda, ova metoda prati tvoje greške — što više puta pogriješiš na nekom ajetu ili stranici, to će se češće vraćati u tvoj raspored, sve dok ne postane sigurno. Dijelove koje dobro znaš ponavljaš rjeđe, pa ne gubiš vrijeme na ono što ionako umiješ. Najbolja je za one koji dobro poznaju svoje slabe tačke i žele efikasnije trošiti vrijeme.
+
+## Po hafizovom nivou
+Ovo nije posebna metoda za sebe, nego podešavanje koje se dodaje na sve ostale metode prema tvom trenutnom nivou. Početnicima daje manji dnevni cilj i češća ponavljanja, dok naprednim hafizima daje brži tempo i više fokusa na održavanje. Nivo možeš promijeniti bilo kad kako napreduješ.
+
+## Slobodan raspored
+Za one koji već imaju svoj ustaljeni način ponavljanja i ne trebaju da im aplikacija govori šta i kada da rade. U ovom modu aplikacija ne pravi raspored — samo bilježi šta si odradio/la i vodi tvoju historiju i statistiku. Pogodna je za iskusne hafize sa vlastitim sistemom ili one koji žele koristiti aplikaciju samo za praćenje.
+
+## Muallimov plan
+Ovdje raspored ne pravi aplikacija, nego tvoj muallim — na osnovu onoga što zna o tebi, tvom tempu i tvojim slabim tačkama. Muallim ti zadaje sedmične zadatke i rokove i ostavlja bilješke, a taj plan ti se prikazuje kao prioritetan, iznad svih automatskih rasporeda. Idealna je za učenike koji imaju aktivnog muallima koji želi direktno voditi njihovo ponavljanje.
+
+## Femi bi Ševk
+Klasična, stoljetna podjela cijelog Kur'ana na sedam približno jednakih dijelova, po jedan za svaki dan sedmice — tako svake sedmice završiš jednu potpunu hatmu ponavljanja. Ovo je tradicionalni sistem koji su generacijama koristili učeni ljudi da drže cijeli Kur'an svježim u pamćenju. Pogodna je za one koji žele redovno prolaziti kompletan hifz, sedmicu za sedmicom.
+
+## Džuz kroz sedmicu
+Sličan sistemu džuzeva, ali usporen: umjesto da jedan džuz ponoviš u jednom danu, tog istog džuza se držiš cijelu sedmicu, raspoređenog na manje, lakše dnevne porcije. Pogodna je za one kojima puni džuz dnevno nije realan, ali i dalje žele redovno prolaziti kroz cijeli svoj hifz.
+
+## Dinamična raspodjela
+Aplikacija svaki dan pogleda koliko ti je stvarno vremena i truda ostalo, pa sama prilagodi koliko ćeš danas ponavljati — ako jedan dan uradiš više, sutra ti je lakše, a ako propustiš dan, raspored se pametno preraspoređuje umjesto da te "kazni". Dobra je za one čiji se dnevni raspored često mijenja, a ipak žele vođen plan.
+
+## SRS (naučni model)
+Zasnovana na naučnim istraživanjima o pamćenju: ono što dobro znaš ponavljaš sve rjeđe (za dan, pa sedmicu, pa mjesec, pa i po pola godine), a ono što ti pravi problem vraća se brzo, sve dok ne postane sigurno. Aplikacija sama prati svaki ajet i odlučuje kad je pravo vrijeme za ponavljanje — ti samo dolaziš i radiš ono što ti pokaže.
+
+## Koju metodu izabrati?
+Ne postoji jedna "najbolja" metoda za sve — postoji ona koja odgovara tebi, tvom trenutnom hifzu i tvom rasporedu. Ako si tek na početku, Tri dana ili Sedam dana su siguran izbor. Ako već imaš dio hifza i želiš ga održavati, pogledaj Sistem džuzeva, Šetonovu metodu ili Femi bi Ševk. Ako imaš muallima, Muallimov plan ti daje najviše vođenja. A ako nisi siguran/na, slobodno probaj nekoliko — metodu možeš promijeniti u svakom trenutku, bez gubljenja napretka.`,
+    contentEn: `Learning a new page is the easy part. The real work is remembering it months and years later — and that's what review, or murajaah, is for. It's what turns memorization from something temporary into something permanent.
+
+Every hafiz remembers differently, though. Some are just starting out and worry about forgetting yesterday's page. Others already hold a good portion of the Qur'an and just want to keep it fresh. Some have a teacher guiding them, others prefer to manage it themselves. That's why Tmizan offers fifteen different review methods, so everyone can find the one that actually fits them.
+
+## Fibonacci (1→2→3→5→8)
+Every time you review something successfully, the next review is pushed further into the future — tomorrow, then three days, then five, then eight. A mistake resets it back to the start. Great for active learners who review regularly.
+
+## Three Days
+Everything you learn goes through three days of review in a row — today, tomorrow, and the day after — before moving to weekly, then monthly review. Simple and predictable, ideal for beginners.
+
+## Seven Days
+Every new page or surah gets reviewed seven days in a row, followed by a two-week break. Slower, but builds very solid memory.
+
+## Juz System
+The whole Qur'an is split into 30 juz, one reviewed per day, completing a full cycle every month. Great for those with a solid amount of hifz already.
+
+## By Pages
+You choose how many pages to review each day, and simply get the next set — regardless of when you learned them. Flexible and easy to adjust to your day.
+
+## Seton Method (8 parts)
+Your hifz is split into eight parts, one reviewed per day — so you go through everything twice a week. Intensive, and keeps memorization always fresh.
+
+## New and Old
+Half your review time goes to what you learned in the last two weeks, half to what you learned longer ago. Keeps both fresh and older memorization safe.
+
+## Based on Mistakes
+Tracks your own mistakes — the more you slip up on something, the more often it comes back, until it's solid. Efficient for those who know their weak spots.
+
+## By Hafiz Level
+Not a method on its own, but an adjustment layered on every other method based on your current level — smaller goals for beginners, faster pace for advanced huffaz.
+
+## Free Schedule
+For those with their own established routine. The app just logs what you did instead of building a schedule for you.
+
+## Muallim's Plan
+Your teacher builds the schedule instead of the app, based on what they know about you. Shows up as your top priority.
+
+## Femi bi Shevk
+A centuries-old division of the Qur'an into seven parts, one per day of the week, completing a full review cycle every week.
+
+## Juz Across the Week
+Like the juz system, but slower — one juz spread across a full week in smaller daily portions.
+
+## Dynamic Distribution
+The app looks at how much time you actually have each day and adjusts your review load accordingly, instead of punishing missed days.
+
+## SRS (Scientific Model)
+Based on research into memory: things you know well are reviewed less and less often, while anything giving you trouble comes back quickly until it's solid.
+
+## Which one should you pick?
+There's no single best method — only the one that fits you, your current hifz, and your schedule. New to hifz? Three Days or Seven Days are safe choices. Already holding a good portion and want to maintain it? Look at the Juz System, Seton Method, or Femi bi Shevk. Have an active teacher? The Muallim's Plan gives you the most guidance. Not sure yet? Try a few — you can switch anytime without losing your progress.`,
+    thumbnail: "",
+    video: null,
+    author: "Tmizan tim",
+    authorEn: "Tmizan Team",
+    date: "2026-08-27",
+    category: "hifz",
+    readTime: 10,
+    featured: false,
+    published: true,
+  },
 ]
 
 // Pomoćne funkcije

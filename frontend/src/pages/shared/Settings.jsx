@@ -185,7 +185,7 @@ export default function Settings() {
                   : `${theme?.muted} border-transparent hover:bg-black/10`
                 }`}
             >
-              <div className={`w-4 h-4 rounded-full ${tTheme.logo}`} />
+              <div className={`w-4 h-4 rounded-full ${tTheme.swatch}`} />
               {t(`themes.${tTheme.name}`)}
             </button>
           ))}

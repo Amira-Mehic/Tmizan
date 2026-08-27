@@ -176,8 +176,6 @@ export default function SidebarLayout() {
       icon: Icons.Crown,
       links: [
         { label: t("sidebar.nav.dashboard"), path: "/admin/dashboard", icon: Icons.LayoutDashboard },
-        { label: t("sidebar.nav.moderators"), path: "/admin/moderatori", icon: Icons.ShieldAlert },
-        { label: t("sidebar.nav.content"), path: "/admin/sadrzaj", icon: Icons.Settings },
         { label: t("sidebar.nav.ads"), path: "/admin/oglasi", icon: Icons.FileText },
       ],
     },

@@ -13,6 +13,7 @@ import PublicHeader from "../../components/layout/PublicHeader"
 import SideAds from "../../components/ui/SideAds"
 import ParticleBackground from "../../components/shared/ParticleBackground"
 import { Reveal, Counter } from "../../components/shared/Reveal"
+import { REVIEW_METHODS_BLOG_SLUG } from "../../features/murajaah/reviewMethodInfo"
 import ApplyMualimSection from "../../components/shared/ApplyMualimSection"
 
 // Uklanja border klase iz theme stringa (kutije bez ivica)
@@ -24,7 +25,7 @@ const FBULLETS = {
     tracker: ["Praćenje po stranici i po ajetu", "Statusi, sigurnost i greške", "Prijevod i tefsir uz svaki ajet", "Historija ponavljanja s datumima"],
     planner: ["Biraš mushaf i opseg učenja", "Mjeri se u redovima, ne minutama", "Tačan procijenjeni datum završetka", "Vizuelni put do cilja"],
     murajaah: ["Preko 15 priznatih metoda", "Intervalne i kružne metode", "Naučni SRS i originalni Tmizan model", "Metode se mogu kombinovati"],
-    mualim: ["Prati napredak svakog učenika", "Mapa slabih mjesta i greške", "Sesije, halke i poruke", "Zadaci i prioritetni planovi"],
+    mualim: ["Prati napredak svakog učenika", "Mapa slabih mjesta i greške", "Sesije i poruke", "Zadaci i prioritetni planovi"],
     print: ["Mjesečni plan s datumima", "Print ili izvoz u PDF/Word", "Slobodni dani i pojačano ponavljanje", "Uređivanje bilješki prije printa"],
     test: ["Testiraj baš slabe ajete", "Most: prethodni — ??? — sljedeći", "Historija i trend, privatno", "Označavanje riječi s greškom"],
   },
@@ -32,7 +33,7 @@ const FBULLETS = {
     tracker: ["Track by page and by ayah", "Statuses, confidence and mistakes", "Translation and tafsir per ayah", "Repetition history with dates"],
     planner: ["Choose mushaf and scope", "Measured in lines, not minutes", "Exact estimated finish date", "Visual path to your goal"],
     murajaah: ["Over 15 recognized methods", "Interval and cyclic methods", "Scientific SRS and original Tmizan model", "Methods can be combined"],
-    mualim: ["Track each student's progress", "Weak-spots map and mistakes", "Sessions, halaqas and messages", "Tasks and priority plans"],
+    mualim: ["Track each student's progress", "Weak-spots map and mistakes", "Sessions and messages", "Tasks and priority plans"],
     print: ["Monthly plan with dates", "Print or export to PDF/Word", "Rest days and extra review", "Edit notes before printing"],
     test: ["Test exactly the weak ayahs", "Bridge: previous — ??? — next", "History and trend, private", "Word-level mistake marking"],
   },
@@ -58,7 +59,7 @@ export default function Home() {
     { icon: "🖨️",   key: "print",    img: "print",    ext: "png" },
     { icon: "✍️",   key: "test",     img: "test",     ext: "png" },
   ]
-  const METODE = ["m20", "mFibonacci", "mKrugovi", "mSrs", "mFemi"]
+  const METODE = ["m20", "mFibonacci", "mKrugovi", "mSrs", "mFemi", "mSeton"]
 
   // Video pozadine po temi. Broj se odnosi na fajl public/tmizanN.mp4, pa svaka
   // tema mora imati unos - neupisana tema pada na podrazumijevani video.
@@ -265,6 +266,11 @@ export default function Home() {
         </div>
         <Reveal delay={120}>
           <p className={`text-center text-sm mt-8 ${theme.muted}`}>{t("home.methodsMore")}</p>
+          <p className="text-center text-sm mt-2">
+            <Link to={`/blog/${REVIEW_METHODS_BLOG_SLUG}`} className={`font-medium underline ${theme.accent}`}>
+              {t("home.methodsReadMore")} →
+            </Link>
+          </p>
         </Reveal>
       </section>
 

@@ -65,8 +65,6 @@ import ModeratorDashboard from "./pages/moderator/ModeratorDashboard"
 
 // ADMIN
 import AdminDashboard from "./pages/admin/AdminDashboard"
-import AdminModeratorsManager from "./pages/admin/AdminModeratorsManager"
-import AdminSystemContent from "./pages/admin/AdminSystemContent"
 import AdminAdsManager from "./pages/admin/AdminAdsManager"
 
 // Blog je javan, ali prijavljeni korisnik ga vidi UNUTAR sidebara -
@@ -179,8 +177,6 @@ function AppContent() {
             {/* ADMIN */}
             <Route path="/moderator/dashboard" element={<ModeratorDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/moderatori" element={<AdminModeratorsManager />} />
-            <Route path="/admin/sadrzaj" element={<AdminSystemContent />} />
             <Route path="/admin/oglasi" element={<AdminAdsManager />} />
           </Route>
         </Routes>

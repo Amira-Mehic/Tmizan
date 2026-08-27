@@ -94,7 +94,7 @@ export default function PublicHeader() {
                       onClick={() => { setTheme(th); setThemeOpen(false) }}
                       className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs hover:opacity-70 ${theme.text} ${th.id === theme.id ? theme.cardSub : ""}`}
                     >
-                      <span className={`w-4 h-4 rounded-full ${th.logo}`} />
+                      <span className={`w-4 h-4 rounded-full ${th.swatch}`} />
                       {th.name}
                     </button>
                   ))}
@@ -185,7 +185,7 @@ export default function PublicHeader() {
                       onClick={() => setTheme(th)}
                       title={th.name}
                       aria-label={th.name}
-                      className={`w-8 h-8 rounded-full ${th.logo} transition-transform ${th.id === theme.id ? "ring-2 ring-offset-2 ring-offset-transparent ring-current scale-110" : "hover:scale-105"}`}
+                      className={`w-8 h-8 rounded-full ${th.swatch} transition-transform ${th.id === theme.id ? "ring-2 ring-offset-2 ring-offset-transparent ring-current scale-110" : "hover:scale-105"}`}
                     />
                   ))}
                 </div>

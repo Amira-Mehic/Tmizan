@@ -33,7 +33,7 @@ const STR = {
     title: "Ponavljanje (Murajaa)", subtitle: "Blokovi, metode i današnji raspored — metode se mogu kombinovati po bloku",
     newBlock: "Novi blok (naučeno danas)", unit: "Jedinica", items: "Stavke",
     itemsHint: "npr. ajeti: 36:1, 36:2, 36:3 — ili stranice: 302, 303",
-    label: "Naziv (opciono)", labelPh: "npr. Ja-Sin 1–12", method: "Metoda ponavljanja",
+    label: "Naziv", labelPh: "npr. Ja-Sin 1–12", labelRequired: "Naziv je obavezan.", method: "Metoda ponavljanja",
     create: "Dodaj u sistem ponavljanja", created: "Blok dodan ✓",
     dueToday: "Na redu danas", noDue: "Ništa nije na redu — sve stigneš!",
     correct: "Tačno", incorrect: "Greška", late: "kasni {n} d.",
@@ -50,7 +50,7 @@ const STR = {
     title: "Review (Murajaah)", subtitle: "Blocks, methods and today's schedule — methods can be combined per block",
     newBlock: "New block (learned today)", unit: "Unit", items: "Items",
     itemsHint: "e.g. ayahs: 36:1, 36:2, 36:3 — or pages: 302, 303",
-    label: "Label (optional)", labelPh: "e.g. Ya-Sin 1–12", method: "Review method",
+    label: "Label", labelPh: "e.g. Ya-Sin 1–12", labelRequired: "A label is required.", method: "Review method",
     create: "Add to review system", created: "Block added ✓",
     dueToday: "Due today", noDue: "Nothing due — you're on track!",
     correct: "Correct", incorrect: "Mistake", late: "{n} d. late",
@@ -110,7 +110,7 @@ export default function MurajaaPage() {
 
   const create = async () => {
     const items = itemsText.split(/[,\s]+/).filter(Boolean);
-    if (!items.length) return;
+    if (!items.length || !label.trim()) return;
     try {
       await createReviewBlock(userId, { unitType: unit, items, label, learnedOn: today, methodId });
       setItemsText(""); setLabel(""); setCreated(true);
@@ -160,8 +160,11 @@ export default function MurajaaPage() {
               className={`w-full ${SECTION_ACCENTS.mualim.item} ${placeholderCls} rounded-xl px-3 py-2.5 text-sm outline-none`} />
             <p className={`text-[11px] mt-1 ${theme.muted}`}>{s.itemsHint}</p>
           </div>
-          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={s.labelPh}
-            className={`w-full ${SECTION_ACCENTS.mualim.item} ${placeholderCls} rounded-xl px-3 py-2.5 text-sm outline-none`} />
+          <div>
+            <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={s.labelPh}
+              className={`w-full ${SECTION_ACCENTS.mualim.item} ${placeholderCls} rounded-xl px-3 py-2.5 text-sm outline-none ${!label.trim() ? "ring-1 ring-red-400/50" : ""}`} />
+            {!label.trim() && <p className="text-[11px] mt-1 text-red-400">{s.labelRequired}</p>}
+          </div>
           <div className="flex gap-2 flex-wrap">
             {Object.keys(METHODS).map((m) => (
               <button key={m} onClick={() => setMethodId(m)}
@@ -171,7 +174,8 @@ export default function MurajaaPage() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={create} className={`${theme.button} rounded-xl px-6 py-2.5 text-sm font-semibold`}>
+            <button onClick={create} disabled={!label.trim() || !itemsText.trim()}
+              className={`${theme.button} rounded-xl px-6 py-2.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed`}>
               {s.create}
             </button>
             {created && <span className="text-sm text-green-500">{s.created}</span>}

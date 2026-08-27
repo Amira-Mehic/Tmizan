@@ -318,6 +318,11 @@ export default function KorisnikDashboard() {
     dinamicna: "Dinamična", femi: "Femi bi-ševk", dzuz_sedmicno: "Džuz kroz sedmicu",
   };
 
+  const UNIT_LABEL_KEY = {
+    red: "dashboard.unitRed", ajet: "dashboard.unitAjet", stranica: "dashboard.unitStranica",
+    sura: "dashboard.unitSura", dzuz: "dashboard.unitDzuz",
+  };
+
   const percent = Math.round((progress.learned / progress.total) * 100);
 
   // ── Zaostatak (dokument, sekcija 8): "Dobro došao nazad" nakon duže pauze,
@@ -618,7 +623,9 @@ export default function KorisnikDashboard() {
                   return (
                     <li key={`motorB-${stavka.id}`} className={`${SECTION_ACCENTS.review.item} rounded-xl px-3 py-2 text-sm flex justify-between items-center gap-2 flex-wrap`}>
                       <div className="min-w-0">
-                        <div className="truncate">{stavka.label || stavka.items.join(", ")}</div>
+                        <div className="truncate">
+                        {stavka.label || (UNIT_LABEL_KEY[stavka.unitType] ? `${t(UNIT_LABEL_KEY[stavka.unitType])} ${stavka.items.join(", ")}` : stavka.items.join(", "))}
+                      </div>
                         <div className={`text-xs ${late > 0 ? "text-red-500 font-semibold" : theme.muted}`}>
                           {late > 0 ? t("dashboard.daysLate", { count: late }) : describeState(stavka)}
                         </div>

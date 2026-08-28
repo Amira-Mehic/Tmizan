@@ -30,10 +30,11 @@ Ne zahtijeva ništa osim Dockera i Supabase CLI-a. Iz korijena projekta:
 ```
 npm install -g supabase
 supabase start
-cp .env.example .env
+copy .env.example .env   /   cp .env.example .env
 docker compose up --build
 ```
-Aplikacija se otvara na `http://localhost:8080`, povezana na lokalnu bazu.
+Aplikacija se otvara na `http://localhost:8080`, povezana na lokalnu bazu kojoj se 
+moze pristupiti putem linka `http://127.0.0.1:54323`.
 
 
 

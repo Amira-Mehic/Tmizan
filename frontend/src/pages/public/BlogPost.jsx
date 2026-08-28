@@ -276,7 +276,9 @@ export default function BlogPost() {
                 </div>
                 <div>
                   <p className={`text-xs font-bold ${tText}`}>{post.author}</p>
-                  <p className={`text-[10px] ${tSubtle}`}>{fmtDate(post.date, lang)}</p>
+                  <p className={`text-[10px] ${tSubtle}`}>
+                    {post.authorEmail ? `${post.authorEmail} · ${fmtDate(post.date, lang)}` : fmtDate(post.date, lang)}
+                  </p>
                 </div>
               </div>
               {post.readTime && (

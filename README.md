@@ -94,11 +94,14 @@ ručnog koraka. Korijen projekta za Vercel je `frontend/` (tamo se nalazi
 `vercel.json` s pravilom preusmjeravanja svih putanja na `index.html`, jer je
 u pitanju jednostranična aplikacija).
 
-Adresa i anon ključ za ovu verziju nisu ni u jednom `.env` fajlu iz
-repozitorija - postavljeni su direktno u Vercelovim Environment Variables
-(Vercel nadzorna tabla, Settings, Environment Variables) i vezani za zaseban,
-produkcijski Supabase projekat u oblaku, odvojen od bilo čega što se koristi
-u opcijama 1-4.
+Adresa i anon ključ za ovu verziju postavljaju se kroz Vercelove Environment
+Variables (Vercel nadzorna tabla, Settings, Environment Variables) i vezani su
+za produkcijski Supabase projekat u oblaku, odvojen od lokalne baze koja se
+koristi u opcijama 1 i 3. Ako te varijable nisu postavljene, koristi se zadana
+vrijednost upisana u `frontend/src/services/SupaBaseClient.js`, da objavljena
+verzija ne ostane bez klijenta baze. Riječ je o javnoj adresi i publishable
+ključu, koje izgrađena aplikacija ionako sadrži, jer pristup podacima
+ograničavaju sigurnosna pravila na nivou reda (RLS), a ne tajnost ključa.
 
 ---
 

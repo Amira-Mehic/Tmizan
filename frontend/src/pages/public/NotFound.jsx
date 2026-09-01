@@ -3,7 +3,9 @@
 // ============================================================================
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function NotFound() {
-  return <div className="p-8 text-white">404 - Stranica nije pronađena</div>;
+  const { t } = useTranslation();
+  return <div className="p-8 text-white">{t('common.not_found', '404 - Stranica nije pronađena')}</div>;
 }

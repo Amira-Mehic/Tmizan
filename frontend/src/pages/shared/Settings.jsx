@@ -197,10 +197,10 @@ export default function Settings() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className={`text-sm font-semibold mb-1 ${theme?.text}`}>
-              Animirane čestice u pozadini
+              {t('settings_page.particles_title', 'Animirane čestice u pozadini')}
             </h2>
             <p className={`text-xs ${theme?.muted}`}>
-              Uključi ili isključi lebdeće čestice na pozadini stranica (na Početnoj ostaju uvijek uključene).
+              {t('settings_page.particles_subtitle', 'Uključi ili isključi lebdeće čestice na pozadini stranica (na Početnoj ostaju uvijek uključene).')}
             </p>
           </div>
           <button
@@ -355,8 +355,8 @@ export default function Settings() {
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-[#1D9E75]/10 border border-[#1D9E75]/20">
               <span className="text-[#1D9E75] text-sm">✓</span>
               <div>
-                <p className="text-xs font-bold text-[#1D9E75]">Lokacija potvrđena</p>
-                <p className={`text-[11px] mt-0.5 ${theme?.muted}`}>IP adresa pokazuje: {ipInfo?.country}{ipInfo?.city ? `, ${ipInfo.city}` : ""}</p>
+                <p className="text-xs font-bold text-[#1D9E75]">{t('settings_page.loc_match', 'Lokacija potvrđena')}</p>
+                <p className={`text-[11px] mt-0.5 ${theme?.muted}`}>{t('settings_page.loc_ip_shows', 'IP adresa pokazuje:')} {ipInfo?.country}{ipInfo?.city ? `, ${ipInfo.city}` : ""}</p>
               </div>
             </div>
           )}
@@ -364,15 +364,15 @@ export default function Settings() {
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-[#EF9F27]/10 border border-[#EF9F27]/20">
               <span className="text-[#EF9F27] text-sm">⚠</span>
               <div>
-                <p className="text-xs font-bold text-[#EF9F27]">Nije podudaranje</p>
+                <p className="text-xs font-bold text-[#EF9F27]">{t('settings_page.loc_mismatch', 'Nije podudaranje')}</p>
                 <p className={`text-[11px] mt-0.5 ${theme?.muted}`}>
-                  IP adresa pokazuje: {ipInfo?.country}{ipInfo?.city ? `, ${ipInfo.city}` : ""}. Možeš svejedno sačuvati ako si npr. na VPN-u.
+                  {t('settings_page.loc_ip_shows', 'IP adresa pokazuje:')} {ipInfo?.country}{ipInfo?.city ? `, ${ipInfo.city}` : ""}. {t('settings_page.loc_vpn_note', 'Možeš svejedno sačuvati ako si npr. na VPN-u.')}
                 </p>
               </div>
             </div>
           )}
           {verifyStatus === "no_profile" && (
-            <p className="text-xs text-[#F58C8C]">Prvo odaberi zemlju i sačuvaj.</p>
+            <p className="text-xs text-[#F58C8C]">{t('settings_page.loc_no_profile', 'Prvo odaberi zemlju i sačuvaj.')}</p>
           )}
         </div>
       </div>
@@ -452,11 +452,11 @@ function NivoSetting({ theme, borderClass, t }) {
         {Object.values(PROFILES).map((p) => (
           <button key={p.id} onClick={() => promijeni(p.id)}
             className={`rounded-xl px-4 py-2 text-sm transition ${nivo === p.id ? `${theme?.button}` : `${theme?.cardSub} ${theme?.muted}`}`}>
-            {p.naziv}
+            {t(`settings_page.nivo_${p.id}`, p.naziv)}
           </button>
         ))}
       </div>
-      {P && <p className={`text-xs mt-3 ${theme?.muted}`}>💡 {P.savjet}</p>}
+      {P && <p className={`text-xs mt-3 ${theme?.muted}`}>💡 {t(`settings_page.savjet_${nivo}`, P.savjet)}</p>}
     </div>
   );
 }

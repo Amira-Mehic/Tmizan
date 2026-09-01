@@ -235,8 +235,8 @@ export default function HifzPlanner() {
           </button>
           <button onClick={() => setShowPdfExport(true)}
             className={`px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${cardCls} ${mutedCls} hover:opacity-80`}
-            title="Izvezi kompletan izvještaj napretka kao PDF">
-            📄 Izvezi PDF
+            title={lang === "en" ? "Export a full progress report as PDF" : "Izvezi kompletan izvještaj napretka kao PDF"}>
+            📄 {lang === "en" ? "Export PDF" : "Izvezi PDF"}
           </button>
           <HelpTip text={lang === "en"
             ? "Export your progress as a PDF: choose a summary, a full detailed report, or a blank tracking sheet — with print options like pages per row."

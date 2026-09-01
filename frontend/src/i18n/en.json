@@ -157,7 +157,20 @@
     "arabic_size_reset": "Reset to default (28px)",
     "preview": "Preview:",
     "nivo_title": "Hafiz level",
-    "nivo_subtitle": "Adjusts recommendations and defaults of all methods."
+    "nivo_subtitle": "Adjusts recommendations and defaults of all methods.",
+    "particles_title": "Animated background particles",
+    "particles_subtitle": "Turn the floating background particles on or off (on the Home page they always stay on).",
+    "nivo_pocetnik": "Beginner",
+    "nivo_srednji": "Intermediate",
+    "nivo_napredni": "Advanced / Hafiz",
+    "savjet_pocetnik": "At this level we recommend the Three-day method — slow but steady.",
+    "savjet_srednji": "A balance of new and old — the Fibonacci schedule with 5–7 review pages a day.",
+    "savjet_napredni": "Focus on maintenance: the juz system or the Seton method, with deeper work on weak spots.",
+    "loc_match": "Location confirmed",
+    "loc_mismatch": "No match",
+    "loc_ip_shows": "Your IP address indicates:",
+    "loc_vpn_note": "You can still save it if you are on a VPN, for example.",
+    "loc_no_profile": "First choose a country and save."
   },
   "dashboard": {
     "title": "Daily Hub",
@@ -517,12 +530,14 @@
     "title": "Become a muallim",
     "subtitle": "Guide students on Tmizan — track progress, assign tasks and plans, schedule recitations. Applications are reviewed manually, not a one-click signup.",
     "guestHint": "Log in or create an account to fill out the application.",
-    "loginBtn": "Log in", "registerBtn": "Register",
+    "loginBtn": "Log in",
+    "registerBtn": "Register",
     "alreadyMualim": "You're already a muallim ✓",
     "openPanel": "Open muallim panel →",
     "pending": "Your application was sent and is awaiting review.",
     "rejectedHint": "Your previous application wasn't accepted — you can send a new one.",
-    "fullName": "Full name", "contact": "Contact (email or phone)",
+    "fullName": "Full name",
+    "contact": "Contact (email or phone)",
     "experience": "Prior teaching/hifz experience (optional)",
     "motivation": "Why do you want to be a muallim on Tmizan? (required)",
     "motivationRequired": "Please write a short motivation.",
@@ -566,7 +581,8 @@
     "status_odbijen": "Declined",
     "manualTitle": "Manual pairing (opposite gender)",
     "manualHint": "Only same-gender muallims are shown here by default. If you specifically want an opposite-gender muallim, they must personally give you their email and private code (only they can see it in their profile).",
-    "manualEmailPh": "Muallim's email", "manualCodePh": "Code",
+    "manualEmailPh": "Muallim's email",
+    "manualCodePh": "Code",
     "manualSend": "Send request",
     "manualSent": "Request sent ✓ — awaiting acceptance.",
     "manualNotFound": "Email and code don't match any muallim.",
@@ -656,5 +672,10 @@
     "pageLabel": "P.",
     "ayahsLabel": "Ayahs",
     "repeatBtn": "Repeat"
+  },
+  "common": {
+    "help": "Help",
+    "page_tour": "Page guide",
+    "not_found": "404 - Page not found"
   }
 }

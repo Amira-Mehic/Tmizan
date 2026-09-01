@@ -18,11 +18,13 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 const POPOVER_WIDTH = 240;
 const MARGIN = 8;
 
 export default function HelpTip({ text }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState(null); // { top, left } u viewport koordinatama
   const btnRef = useRef(null);
@@ -69,7 +71,7 @@ export default function HelpTip({ text }) {
         ref={btnRef}
         type="button"
         onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
-        aria-label="Pomoć"
+        aria-label={t('common.help', 'Pomoć')}
         className="w-4 h-4 shrink-0 rounded-full bg-white/15 text-white/70 border border-white/25 text-[10px] leading-none font-bold flex items-center justify-center hover:bg-white/25 hover:text-white transition-colors align-middle ml-1.5"
       >
         ?

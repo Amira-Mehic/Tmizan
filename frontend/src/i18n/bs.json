@@ -183,7 +183,20 @@
     "arabic_size_reset": "Vrati na zadano (28px)",
     "preview": "Pregled:",
     "nivo_title": "Hafizov nivo",
-    "nivo_subtitle": "Prilagođava preporuke i zadane vrijednosti svih metoda."
+    "nivo_subtitle": "Prilagođava preporuke i zadane vrijednosti svih metoda.",
+    "particles_title": "Animirane čestice u pozadini",
+    "particles_subtitle": "Uključi ili isključi lebdeće čestice na pozadini stranica (na Početnoj ostaju uvijek uključene).",
+    "nivo_pocetnik": "Početnički nivo",
+    "nivo_srednji": "Srednji nivo",
+    "nivo_napredni": "Napredni nivo / Hafiz",
+    "savjet_pocetnik": "Na ovom nivou preporučujemo Metodu tri dana — sporo ali sigurno.",
+    "savjet_srednji": "Balans novog i starog — Fibonacci raspored uz 5–7 stranica ponavljanja dnevno.",
+    "savjet_napredni": "Fokus na održavanje: sistem džuzeva ili Šetonova metoda, dublji rad na slabim mjestima.",
+    "loc_match": "Lokacija potvrđena",
+    "loc_mismatch": "Nije podudaranje",
+    "loc_ip_shows": "IP adresa pokazuje:",
+    "loc_vpn_note": "Možeš svejedno sačuvati ako si npr. na VPN-u.",
+    "loc_no_profile": "Prvo odaberi zemlju i sačuvaj."
   },
   "dashboard": {
     "title": "Dnevni hub",
@@ -517,12 +530,14 @@
     "title": "Postani muallim",
     "subtitle": "Vodi učenike na Tmizanu — prati napredak, zadaji zadatke i planove, zakazuj preslušavanja. Prijava se pregleda ručno, ne postaje se muallim jednim klikom.",
     "guestHint": "Prijavi se ili napravi nalog da bi popunio prijavu.",
-    "loginBtn": "Prijava", "registerBtn": "Registracija",
+    "loginBtn": "Prijava",
+    "registerBtn": "Registracija",
     "alreadyMualim": "Već si muallim ✓",
     "openPanel": "Otvori muallim panel →",
     "pending": "Tvoja prijava je poslana i čeka pregled administracije.",
     "rejectedHint": "Prošla prijava nije prihvaćena — možeš poslati novu.",
-    "fullName": "Ime i prezime", "contact": "Kontakt (email ili telefon)",
+    "fullName": "Ime i prezime",
+    "contact": "Kontakt (email ili telefon)",
     "experience": "Dosadašnje iskustvo u poučavanju/hifzu (opciono)",
     "motivation": "Zašto želiš biti muallim na Tmizanu? (obavezno)",
     "motivationRequired": "Molimo napiši kratku motivaciju.",
@@ -566,7 +581,8 @@
     "status_odbijen": "Odbijen",
     "manualTitle": "Ručno uparivanje (suprotan rod)",
     "manualHint": "Ovdje se podrazumijevano prikazuju samo muallimi istog roda. Ako želiš baš određenog muallima suprotnog roda, on/ona ti mora lično dati svoj email i privatni kod (vidi ga samo on/ona u svom profilu).",
-    "manualEmailPh": "Email muallima", "manualCodePh": "Kod",
+    "manualEmailPh": "Email muallima",
+    "manualCodePh": "Kod",
     "manualSend": "Pošalji zahtjev",
     "manualSent": "Zahtjev poslan ✓ — čeka prihvatanje.",
     "manualNotFound": "Email i kod se ne poklapaju ni s jednim muallimom.",
@@ -656,5 +672,10 @@
     "pageLabel": "Str.",
     "ayahsLabel": "Ajeti",
     "repeatBtn": "Ponovi"
+  },
+  "common": {
+    "help": "Pomoć",
+    "page_tour": "Vodič kroz stranicu",
+    "not_found": "404 - Stranica nije pronađena"
   }
 }

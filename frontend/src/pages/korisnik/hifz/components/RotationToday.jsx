@@ -308,6 +308,8 @@ export default function RotationToday() {
 
 // ── Vizuelni krug: 30 segmenata, popunjeni = naučeni džuzevi, sjaj = danas ──
 function JuzCircle({ total, learned, todayJuz }) {
+  const { lang } = useLang();
+  const s = STR[lang] || STR.bs;
   const R = 46, cx = 54, cy = 54;
   const learnedSet = new Set(learned);
   return (
@@ -329,7 +331,7 @@ function JuzCircle({ total, learned, todayJuz }) {
       <text x={cx} y={cy - 2} textAnchor="middle" className="fill-current" style={{ fontSize: 20, fontWeight: 800 }}>
         {todayJuz || "—"}
       </text>
-      <text x={cx} y={cy + 14} textAnchor="middle" style={{ fontSize: 9, fill: "rgba(150,150,150,0.9)" }}>džuz</text>
+      <text x={cx} y={cy + 14} textAnchor="middle" style={{ fontSize: 9, fill: "rgba(150,150,150,0.9)" }}>{s.juzLabel.toLowerCase()}</text>
     </svg>
   );
 }
